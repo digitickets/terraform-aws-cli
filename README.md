@@ -1,4 +1,4 @@
-# tf_mod_aws_cli
+# terraform-aws-cli
 
 Run the AWS CLI, with the ability to run under an assumed role, to access resources and properties missing from the
 Terraform AWS Provider.
