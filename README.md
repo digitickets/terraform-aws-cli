@@ -12,7 +12,7 @@ replacing.
 
 ```hcl-terraform
 module "current_desired_capacity" {
-  source            = "github.com/digitickets/terraform-aws-cli"
+  source            = "digitickets/cli/aws"
   aws_cli_arguments = "autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[?Tags[?Key==`Name`]|[?Value==`${var.environment}-asg-app`]]|[0].DesiredCapacity'"
 }
 ```
@@ -29,7 +29,7 @@ Extending the first example above, assuming a role is as simple as adding an `as
 
 ```hcl-terraform
 module "current_desired_capacity" {
-  source            = "github.com/digitickets/terraform-aws-cli"
+  source            = "digitickets/cli/aws"
   assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
   aws_cli_arguments = "autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[?Tags[?Key==`Name`]|[?Value==`digitickets-${var.environment}-asg-app`]]|[0].DesiredCapacity'"
 }
@@ -57,7 +57,7 @@ module "current_desired_capacity" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| assume\_role\_arn | The ARN of the role being assumed (optional) | `string` | n/a | yes |
+| assume\_role\_arn | The ARN of the role being assumed (optional) | `string` | `""` | no |
 | aws\_cli\_commands | The AWS CLI command and subcommands | `list(string)` | n/a | yes |
 | aws\_cli\_query | The --query value | `string` | `""` | no |
 | role\_session\_name | The role session name (optional) | `string` | `"terraform-aws-cli"` | no |

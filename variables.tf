@@ -1,6 +1,7 @@
 variable "assume_role_arn" {
   description = "The ARN of the role being assumed (optional)"
   type        = string
+  default     = ""
 }
 
 variable "aws_cli_commands" {
