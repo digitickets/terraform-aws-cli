@@ -23,7 +23,9 @@ replacing.
 ```hcl-terraform
 module "current_desired_capacity" {
   source            = "digitickets/cli/aws"
-  aws_cli_arguments = "autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[?Tags[?Key==`Name`]|[?Value==`${var.environment}-asg-app`]]|[0].DesiredCapacity'"
+  role_session_name = "GettingDesiredCapacityFor${var.environment}"
+  aws_cli_commands  = ["autoscaling", "describe-auto-scaling-groups"]
+  aws_cli_query     = "AutoScalingGroups[?Tags[?Key==`Name`]|[?Value==`digitickets-${var.environment}-asg-app`]]|[0].DesiredCapacity"
 }
 ```
 
@@ -41,7 +43,9 @@ Extending the first example above, assuming a role is as simple as adding an `as
 module "current_desired_capacity" {
   source            = "digitickets/cli/aws"
   assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
-  aws_cli_arguments = "autoscaling describe-auto-scaling-groups --query 'AutoScalingGroups[?Tags[?Key==`Name`]|[?Value==`digitickets-${var.environment}-asg-app`]]|[0].DesiredCapacity'"
+  role_session_name = "GettingDesiredCapacityFor${var.environment}"
+  aws_cli_commands  = ["autoscaling", "describe-auto-scaling-groups"]
+  aws_cli_query     = "AutoScalingGroups[?Tags[?Key==`Name`]|[?Value==`digitickets-${var.environment}-asg-app`]]|[0].DesiredCapacity"
 }
 ```
 
