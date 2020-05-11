@@ -1,5 +1,10 @@
 # Changelog
 
+# v1.2.1 - 2020/05/11
+
+- Updated [README.md](README.md) to reflect `digiticketsgroup/terraforming` image that includes all the required
+  resources for using this module.
+
 # v1.2.0 - 2020/05/11
 
 - Drop down to using `sh` rather than `bash` so this module can operate with Hashicorp Terraform Docker image.
