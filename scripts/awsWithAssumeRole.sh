@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # Validate required commands
 if ! [ -x "$(command -v aws)" ]; then
