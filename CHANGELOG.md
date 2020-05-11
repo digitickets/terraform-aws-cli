@@ -1,5 +1,9 @@
 # Changelog
 
+# v1.2.2 - 2020/05/11
+
+- Updated examples in [README.md](README.md).
+
 # v1.2.1 - 2020/05/11
 
 - Updated [README.md](README.md) to reflect `digiticketsgroup/terraforming` image that includes all the required
