@@ -8,19 +8,7 @@ config {
   }
 }
 
-rule "terraform_dash_in_data_source_name" {
-  enabled = true
-}
-
-rule "terraform_dash_in_module_name" {
-  enabled = true
-}
-
-rule "terraform_dash_in_output_name" {
-  enabled = true
-}
-
-rule "terraform_dash_in_resource_name" {
+rule "terraform_naming_convention" {
   enabled = true
 }
 
