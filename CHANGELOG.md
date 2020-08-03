@@ -1,5 +1,9 @@
 # Changelog
 
+# v1.3.0 - 2020/08/03
+
+- Set minimum version of random provider to 2.3.0
+
 # v1.2.2 - 2020/05/11
 
 - Updated examples in [README.md](README.md).

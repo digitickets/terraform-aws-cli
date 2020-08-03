@@ -57,7 +57,7 @@ module "current_desired_capacity" {
 | terraform | ~> 0.12.24 |
 | external | ~> 1.2.0 |
 | local | ~> 1.4.0 |
-| random | ~> 2.2.1 |
+| random | ~> 2.3.0 |
 
 ## Providers
 
@@ -65,7 +65,7 @@ module "current_desired_capacity" {
 |------|---------|
 | external | ~> 1.2.0 |
 | local | ~> 1.4.0 |
-| random | ~> 2.2.1 |
+| random | ~> 2.3.0 |
 
 ## Inputs
 
