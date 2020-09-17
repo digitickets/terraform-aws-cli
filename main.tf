@@ -4,12 +4,14 @@ resource "random_string" "awscli_output_temp_file_name" {
 }
 
 resource "local_file" "awscli_results_file" {
+  depends_on           = [random_string.awscli_output_temp_file_name]
   filename             = "${path.module}/temp/${random_string.awscli_output_temp_file_name.result}.json"
   directory_permission = "0777"
 }
 
 data "external" "awscli_program" {
-  program = ["${path.module}/scripts/awsWithAssumeRole.sh"]
+  depends_on = [local_file.awscli_results_file]
+  program    = ["${path.module}/scripts/awsWithAssumeRole.sh"]
   query = {
     assume_role_arn   = var.assume_role_arn
     role_session_name = var.role_session_name
@@ -20,5 +22,6 @@ data "external" "awscli_program" {
 }
 
 data "local_file" "awscli_results_file" {
-  filename = data.external.awscli_program.query.output_file
+  depends_on = [data.external.awscli_program]
+  filename   = data.external.awscli_program.query.output_file
 }

@@ -1,5 +1,9 @@
 # Changelog
 
+# v2.0.1 - 2020/09/17
+
+- Add `depends_on` to enforce the order in which the resources get instantiated / evaluated.
+
 # v2.0.0 - 2020/09/17
 
 - Set minimum terraform version to 0.13.0
