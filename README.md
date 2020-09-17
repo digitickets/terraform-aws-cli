@@ -1,3 +1,6 @@
+[![Build Status](https://img.shields.io/travis/digitickets/terraform-aws-cli.svg?style=for-the-badge&logo=travis)](https://travis-ci.org/digitickets/terraform-aws-cli)
+[![GitHub issues](https://img.shields.io/github/issues/digitickets/terraform-aws-cli.svg?style=for-the-badge&logo=github)](https://github.com/digitickets/terraform-aws-cli/issues)
+
 # terraform-aws-cli
 
 Run the AWS CLI, with the ability to run under an assumed role, to access resources and properties missing from the
@@ -54,7 +57,7 @@ module "current_desired_capacity" {
 
 | Name | Version |
 |------|---------|
-| terraform | ~> 0.12.24 |
+| terraform | ~> 0.13.0 |
 | external | ~> 1.2.0 |
 | local | ~> 1.4.0 |
 | random | ~> 2.3.0 |

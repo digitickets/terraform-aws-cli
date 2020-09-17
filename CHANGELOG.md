@@ -1,5 +1,11 @@
 # Changelog
 
+# v2.0.0 - 2020/09/17
+
+- Set minimum terraform version to 0.13.0
+- Added variable validation to optional `assume_role_arn` to match syntax described in 
+  [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html).
+
 # v1.3.0 - 2020/08/03
 
 - Set minimum version of random provider to 2.3.0

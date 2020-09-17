@@ -1,2 +1,3 @@
 /.terraform/
 /temp/
+/tests/*.plan

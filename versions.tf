@@ -1,5 +1,5 @@
 terraform {
-  required_version = "~> 0.12.24"
+  required_version = "~> 0.13.0"
   required_providers {
     external = "~> 1.2.0"
     local    = "~> 1.4.0"
