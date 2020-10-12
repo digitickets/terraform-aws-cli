@@ -1,6 +1,6 @@
 repos:
 - repo: git://github.com/antonbabenko/pre-commit-terraform
-  rev: v1.32.0
+  rev: v1.43.0
   hooks:
     - id: terraform_tflint
     - id: terraform_fmt
@@ -10,3 +10,8 @@ repos:
   rev: v3.2.0
   hooks:
     - id: check-merge-conflict
+    - id: pretty-format-json
+      files: '(.*/annotations|config).json$'
+      args:
+        - --autofix
+        - --indent=2
