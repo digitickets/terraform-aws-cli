@@ -26,4 +26,5 @@ repos:
       args:
         - --autofix
         - --indent=2
+        - --no-sort-keys
     - id: trailing-whitespace
