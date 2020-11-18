@@ -10,10 +10,10 @@ Terraform AWS Provider.
 
 This module requires a couple of additional resources to operate successfully.
 
-1. Amazon Web Service Command Line Interface (awscli)  
+1. Amazon Web Service Command Line Interface (awscli)
    This is available in several forms [here](https://aws.amazon.com/cli/).
 
-2. JSON processor (jq)  
+2. JSON processor (jq)
    This is available [here](https://stedolan.github.io/jq/).
 
 # Examples
@@ -120,4 +120,3 @@ RUN yum update -y \
 
 ENTRYPOINT ["/bin/sh"]
 ```
-
