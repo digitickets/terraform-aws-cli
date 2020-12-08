@@ -1,8 +1,8 @@
 terraform {
-  required_version = "~> 0.13.0"
+  required_version = "~> 0.14.0"
   required_providers {
-    external = "~> 1.2.0"
-    local    = "~> 1.4.0"
-    random   = "~> 2.3.0"
+    external = "~> 2.0.0"
+    local    = "~> 2.0.0"
+    random   = "~> 3.0.0"
   }
 }

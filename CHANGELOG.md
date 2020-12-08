@@ -1,5 +1,10 @@
 # Changelog
 
+# v3.0.0 - 2020/12/03
+
+- Set minimum terraform version to 0.14.0.
+- Introduced `.terraform.lock.hcl` for versioning of dependencies.
+
 # v2.0.1 - 2020/09/17
 
 - Add `depends_on` to enforce the order in which the resources get instantiated / evaluated.
