@@ -10,10 +10,10 @@ Terraform AWS Provider.
 
 This module requires a couple of additional resources to operate successfully.
 
-1. Amazon Web Service Command Line Interface (awscli)  
+1. Amazon Web Service Command Line Interface (awscli)
    This is available in several forms [here](https://aws.amazon.com/cli/).
 
-2. JSON processor (jq)  
+2. JSON processor (jq)
    This is available [here](https://stedolan.github.io/jq/).
 
 # Examples
@@ -57,18 +57,18 @@ module "current_desired_capacity" {
 
 | Name | Version |
 |------|---------|
-| terraform | ~> 0.13.0 |
-| external | ~> 1.2.0 |
-| local | ~> 1.4.0 |
-| random | ~> 2.3.0 |
+| terraform | ~> 0.14.0 |
+| external | ~> 2.0.0 |
+| local | ~> 2.0.0 |
+| random | ~> 3.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| external | ~> 1.2.0 |
-| local | ~> 1.4.0 |
-| random | ~> 2.3.0 |
+| external | ~> 2.0.0 |
+| local | ~> 2.0.0 |
+| random | ~> 3.0.0 |
 
 ## Inputs
 
@@ -120,4 +120,3 @@ RUN yum update -y \
 
 ENTRYPOINT ["/bin/sh"]
 ```
-

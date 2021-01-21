@@ -1,11 +1,11 @@
 config {
-  module     = false
-  deep_check = false
-  force      = false
+  module = false
+  force  = false
+}
 
-  aws_credentials = {
-    region = "us-east-1"
-  }
+plugin "aws" {
+  enabled    = true
+  deep_check = true
 }
 
 rule "terraform_naming_convention" {
