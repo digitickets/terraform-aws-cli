@@ -1,5 +1,9 @@
 # Changelog
 
+# v3.1.1 - 2021/03/25
+
+- Rereleasing as accidentally released v3.0.0 as v3.1.0.
+
 # v3.1.0 - 2021/03/25
 
 - Add an optional `debug_log_filename` variable. If supplied, a log file will be produced in the supplied location. This
