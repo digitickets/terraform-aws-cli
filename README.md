@@ -11,10 +11,10 @@ Terraform AWS Provider.
 This module requires a couple of additional resources to operate successfully.
 
 1. Amazon Web Service Command Line Interface (awscli)
-   This is available in several forms [here](https://aws.amazon.com/cli/).
+   : This is available in several forms [here](https://aws.amazon.com/cli/).
 
 2. JSON processor (jq)
-   This is available [here](https://stedolan.github.io/jq/).
+   : This is available [here](https://stedolan.github.io/jq/).
 
 # Examples
 
@@ -77,6 +77,7 @@ module "current_desired_capacity" {
 | assume\_role\_arn | The ARN of the role being assumed (optional) | `string` | `""` | no |
 | aws\_cli\_commands | The AWS CLI command and subcommands | `list(string)` | n/a | yes |
 | aws\_cli\_query | The --query value | `string` | `""` | no |
+| debug\_log\_filename | Generate a debug log if a `debug_log_filename` is supplied | `string` | `""` | no |
 | role\_session\_name | The role session name (optional) | `string` | `"terraform-aws-cli"` | no |
 
 ## Outputs

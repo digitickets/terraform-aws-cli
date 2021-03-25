@@ -1,18 +1,12 @@
-script:
+install:
+    - sudo apt-get -y install jq
+    - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    - unzip awscliv2.zip
+    - sudo ./aws/install
     - git clone https://github.com/tfutils/tfenv.git ~/.tfenv
     - sudo ln -s ~/.tfenv/bin/* /usr/local/bin
     - tfenv install
+
+script:
     - terraform init
-
-    # Test the variable values are tested and passed to the plan appropriately.
-    - terraform plan -var-file='tests/test.tfvars' -out='tests/test.plan'
-    - if [[ ! "$(terraform show -json tests/test.plan | jq -cMSr .variables)" == '{"assume_role_arn":{"value":"arn:aws:iam::000000000000:root"},"aws_cli_commands":{"value":["version"]},"aws_cli_query":{"value":""},"role_session_name":{"value":"terraform-aws-cli"}}' ]]; then
-        echo 'Failed to incorporate expected variable values into plan.';
-        exit -1;
-      fi
-
-    # Test an invalid ARN reports appropriately.
-    - if [[ ! "$(terraform plan -var-file='tests/bad_arn.tfvars' -no-color 2>&1)" == *'variable "assume_role_arn"'* ]]; then
-        echo 'Failed to detect invalid ARN.';
-        exit -1;
-      fi
+    - tests/tests.sh

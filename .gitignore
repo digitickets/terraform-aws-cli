@@ -1,4 +1,4 @@
-test-reports/
+/test-reports/
 .idea/
 /.terraform/
 /temp/

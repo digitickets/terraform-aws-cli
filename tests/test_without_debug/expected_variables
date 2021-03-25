@@ -1,0 +1,1 @@
+{"assume_role_arn":{"value":""},"aws_cli_commands":{"value":["pricing","describe-services","--region","us-east-1"]},"aws_cli_query":{"value":"Services[].ServiceCode"},"debug_log_filename":{"value":""},"role_session_name":{"value":"terraform-aws-cli"}}
