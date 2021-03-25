@@ -1,5 +1,13 @@
 # Changelog
 
+# v3.1.0 - 2021/03/25
+
+- Add an optional `debug_log_filename` variable. If supplied, a log file will be produced in the supplied location. This
+  option enables the `--debug` option of the AWS CLI. Use this in safe environments as potentially sensitive content may
+  be logged.
+- Added [adaptive retry mode](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-retries.html#cli-usage-retries-modes-adaptive)
+  to help alleviate throttling issues.
+
 # v3.0.0 - 2020/12/03
 
 - Set minimum terraform version to 0.14.0.
