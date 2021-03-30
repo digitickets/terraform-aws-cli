@@ -1,5 +1,10 @@
 # Changelog
 
+# No release required - 2021/03/30
+
+- Updated tests to use an AWS request that does not require credentials, allowing the full terraform plan and apply
+  process to be run and tested with the module.
+
 # v3.1.1 - 2021/03/25
 
 - Rereleasing as accidentally released v3.0.0 as v3.1.0.
