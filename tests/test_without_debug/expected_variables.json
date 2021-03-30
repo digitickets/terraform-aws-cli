@@ -1,0 +1,23 @@
+{
+  "assume_role_arn": {
+    "value": ""
+  },
+  "aws_cli_commands": {
+    "value": [
+      "s3api",
+      "list-objects",
+      "--bucket",
+      "ryft-public-sample-data",
+      "--no-sign-request"
+    ]
+  },
+  "aws_cli_query": {
+    "value": "max_by(Contents, &Size)"
+  },
+  "debug_log_filename": {
+    "value": ""
+  },
+  "role_session_name": {
+    "value": "terraform-aws-cli"
+  }
+}
