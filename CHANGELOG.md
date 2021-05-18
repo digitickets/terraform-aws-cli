@@ -1,5 +1,9 @@
 # Changelog
 
+# v4.0.0 - 2021/05/18
+
+- Set minimum terraform version to 0.15.0.
+
 # No release required - 2021/03/30
 
 - Updated tests to use an AWS request that does not require credentials, allowing the full terraform plan and apply
