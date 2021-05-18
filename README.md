@@ -57,18 +57,18 @@ module "current_desired_capacity" {
 
 | Name | Version |
 |------|---------|
-| terraform | ~> 0.14.0 |
-| external | ~> 2.0.0 |
-| local | ~> 2.0.0 |
-| random | ~> 3.0.0 |
+| terraform | >= 0.15 |
+| external | ~> 2.0 |
+| local | ~> 2.0 |
+| random | ~> 3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| external | ~> 2.0.0 |
-| local | ~> 2.0.0 |
-| random | ~> 3.0.0 |
+| external | ~> 2.0 |
+| local | ~> 2.0 |
+| random | ~> 3.0 |
 
 ## Inputs
 
