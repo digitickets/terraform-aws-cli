@@ -57,35 +57,47 @@ module "current_desired_capacity" {
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.15 |
-| external | ~> 2.0 |
-| local | ~> 2.0 |
-| random | ~> 3.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.15 |
+| <a name="requirement_external"></a> [external](#requirement\_external) | ~> 2.0 |
+| <a name="requirement_local"></a> [local](#requirement\_local) | ~> 2.0 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| external | ~> 2.0 |
-| local | ~> 2.0 |
-| random | ~> 3.0 |
+| <a name="provider_external"></a> [external](#provider\_external) | ~> 2.0 |
+| <a name="provider_local"></a> [local](#provider\_local) | ~> 2.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | ~> 3.0 |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [local_file.awscli_results_file](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
+| [random_string.awscli_output_temp_file_name](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
+| [external_external.awscli_program](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external) | data source |
+| [local_file.awscli_results_file](https://registry.terraform.io/providers/hashicorp/local/latest/docs/data-sources/file) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| assume\_role\_arn | The ARN of the role being assumed (optional) | `string` | `""` | no |
-| aws\_cli\_commands | The AWS CLI command and subcommands | `list(string)` | n/a | yes |
-| aws\_cli\_query | The --query value | `string` | `""` | no |
-| debug\_log\_filename | Generate a debug log if a `debug_log_filename` is supplied | `string` | `""` | no |
-| role\_session\_name | The role session name (optional) | `string` | `"terraform-aws-cli"` | no |
+| <a name="input_assume_role_arn"></a> [assume\_role\_arn](#input\_assume\_role\_arn) | The ARN of the role being assumed (optional) | `string` | `""` | no |
+| <a name="input_aws_cli_commands"></a> [aws\_cli\_commands](#input\_aws\_cli\_commands) | The AWS CLI command and subcommands | `list(string)` | n/a | yes |
+| <a name="input_aws_cli_query"></a> [aws\_cli\_query](#input\_aws\_cli\_query) | The --query value | `string` | `""` | no |
+| <a name="input_debug_log_filename"></a> [debug\_log\_filename](#input\_debug\_log\_filename) | Generate a debug log if a `debug_log_filename` is supplied | `string` | `""` | no |
+| <a name="input_role_session_name"></a> [role\_session\_name](#input\_role\_session\_name) | The role session name (optional) | `string` | `"terraform-aws-cli"` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| result | The output of the AWS CLI command |
-
+| <a name="output_result"></a> [result](#output\_result) | The output of the AWS CLI command |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 # Docker
