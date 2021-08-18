@@ -1,8 +1,9 @@
 config {
-  module = false
+  module = true
   force  = false
 }
 
+// Only the AWS plugin is enabled. The Google and Azure plugins are not enabled as we have no current use for them.
 plugin "aws" {
   enabled    = true
   deep_check = true
