@@ -1,5 +1,9 @@
 # Changelog
 
+# v4.1.0 - 2021/10/05
+
+- Validate role_session_name - max length 64 characters and must match specific regex.
+
 # v4.0.0 - 2021/05/18
 
 - Set minimum terraform version to 0.15.0.
