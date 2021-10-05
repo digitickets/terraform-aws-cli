@@ -2,7 +2,7 @@
 
 # v4.1.0 - 2021/10/05
 
-- Validate role_session_name - max length 64 characters and must match specific regex.
+- Validate role_session_name so that the maximum length is 64 characters and that it must match a specific regex.
 
 # v4.0.0 - 2021/05/18
 
