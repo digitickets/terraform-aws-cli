@@ -23,6 +23,16 @@ variable "role_session_name" {
   description = "The role session name (optional)"
   type        = string
   default     = "terraform-aws-cli"
+
+  validation {
+    condition     = length(var.role_session_name) <= 64
+    error_message = "The role session name must be less than or equal to 64 characters."
+  }
+
+  validation {
+    condition     = can(regex("^[\\w+=,.@-]*$", var.role_session_name))
+    error_message = "The role session name match the regular expression '^[\\w+=,.@-]*$'."
+  }
 }
 
 variable "debug_log_filename" {
