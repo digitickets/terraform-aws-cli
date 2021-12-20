@@ -41,6 +41,9 @@ if [ -n "${DEBUG_LOG_FILENAME}" ]; then
   mkdir -p "$(dirname ${DEBUG_LOG_FILENAME})"
 fi
 
+# Make sure output file directory exists
+mkdir -p "$(dirname ${OUTPUT_FILE})"
+
 # Disable any assigned pager
 export AWS_PAGER=""
 

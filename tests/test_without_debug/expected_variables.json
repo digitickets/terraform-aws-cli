@@ -18,6 +18,6 @@
     "value": ""
   },
   "role_session_name": {
-    "value": "terraform-aws-cli"
+    "value": "test_without_debug"
   }
 }

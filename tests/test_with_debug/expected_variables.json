@@ -15,9 +15,9 @@
     "value": "max_by(Contents, &Size)"
   },
   "debug_log_filename": {
-    "value": "test-reports/test_with_debug.debug.log"
+    "value": "test-reports/test_with_debug/debug.log"
   },
   "role_session_name": {
-    "value": "terraform-aws-cli"
+    "value": "test_with_debug"
   }
 }

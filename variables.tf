@@ -20,9 +20,8 @@ variable "aws_cli_query" {
 }
 
 variable "role_session_name" {
-  description = "The role session name (optional)"
+  description = "The role session name"
   type        = string
-  default     = "terraform-aws-cli"
 
   validation {
     condition     = length(var.role_session_name) <= 64

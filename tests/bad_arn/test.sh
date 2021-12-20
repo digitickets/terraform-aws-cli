@@ -1,9 +1,20 @@
 #!/usr/bin/env bash
-echo 'Start  : tests/bad_arn'
 
-if [[ ! "$(terraform plan -var-file='tests/bad_arn/terraform.tfvars' -no-color 2>&1)" == *'variable "assume_role_arn"'* ]]; then
-  echo 'Failed to detect invalid ARN.';
+function run_test() {
+if [[ -f $PLAN_FILE ]]; then
+  echo "Incorrectly generated a plan - $PLAN_FILE";
   exit 1;
 fi
 
-echo 'Passed : tests/bad_arn'
+if [[ ! -z "$(cat $PLAN_LOG_FILE)" ]]; then
+  echo "Incorrectly generated content in the plan log file - $PLAN_LOG_FILE";
+  exit 2;
+fi
+
+if [[ ! "$(cat $PLAN_ERROR_FILE)" == *'The optional ARN must match the format documented in'* ]]; then
+  echo 'Failed to detect invalid ARN.';
+  exit 3;
+fi
+}
+
+. tests/common.sh $0
