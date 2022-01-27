@@ -1,5 +1,9 @@
 # Changelog
 
+# v5.0.0 - 2022/01/27
+
+- Fixed incompatibilities with Terraform 1.1.0.
+
 # v4.1.0 - 2021/10/05
 
 - Validate role_session_name so that the maximum length is 64 characters and that it must match a specific regex.
