@@ -1,4 +1,5 @@
-/test-reports/
+test-reports/
 .idea/
-/.terraform/
-/temp/
+.terraform/
+.terraform.lock.hcl
+temp/
