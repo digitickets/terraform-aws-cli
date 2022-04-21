@@ -1,5 +1,5 @@
-test-reports/
+/test-reports/
 .idea/
+/PersonalSettingsMakefile
 .terraform/
-.terraform.lock.hcl
-temp/
+/temp/

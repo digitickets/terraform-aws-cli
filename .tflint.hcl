@@ -6,6 +6,8 @@ config {
 // Only the AWS plugin is enabled. The Google and Azure plugins are not enabled as we have no current use for them.
 plugin "aws" {
   enabled    = true
+  source     = "github.com/terraform-linters/tflint-ruleset-aws"
+  version    = "0.13.3"
   deep_check = true
 }
 

@@ -1,14 +1,14 @@
 repos:
-  - repo: git://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.50.0
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.68.1
     hooks:
       - id: terraform_tflint
       - id: terraform_fmt
       - id: terraform_validate
         exclude: modules
       - id: terraform_docs
-  - repo: git://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.2.0
     hooks:
       - id: check-added-large-files
       - id: check-executables-have-shebangs
@@ -31,7 +31,7 @@ repos:
       - id: trailing-whitespace
 
   - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
-    rev: 0.1.0
+    rev: 0.1.1
     hooks:
       - id: yamlfmt
         args:
