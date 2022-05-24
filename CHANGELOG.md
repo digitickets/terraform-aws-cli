@@ -1,5 +1,9 @@
 # Changelog
 
+# v5.0.1 - 2022/05/24
+
+- Explicitly specify output type as json for assume role call. Thank you [Niranjan Rajendran](https://github.com/digitickets/terraform-aws-cli/pull/2)
+
 # v5.0.0 - 2022/01/27
 
 - Fixed incompatibilities with Terraform 1.1.0.
