@@ -23,7 +23,7 @@ DEBUG_LOG_FILENAME=$(echo "${TERRAFORM_QUERY}" | jq -r '.debug_log_filename')
 
 # Do we need to assume a role?
 if [ -n "${ASSUME_ROLE_ARN}" ]; then
-  TEMP_ROLE=$(aws sts assume-role --role-arn "${ASSUME_ROLE_ARN}" --role-session-name "${ROLE_SESSION_NAME:-AssumingRole}")
+  TEMP_ROLE=$(aws sts assume-role --output json --role-arn "${ASSUME_ROLE_ARN}" --role-session-name "${ROLE_SESSION_NAME:-AssumingRole}")
   export AWS_ACCESS_KEY_ID=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.AccessKeyId')
   export AWS_SECRET_ACCESS_KEY=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SecretAccessKey')
   export AWS_SESSION_TOKEN=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SessionToken')
