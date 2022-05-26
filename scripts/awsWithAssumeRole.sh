@@ -44,6 +44,9 @@ fi
 # Make sure output file directory exists
 mkdir -p "$(dirname ${OUTPUT_FILE})"
 
+# Make sure output file does not exist
+rm -f "${OUTPUT_FILE}"
+
 # Disable any assigned pager
 export AWS_PAGER=""
 
