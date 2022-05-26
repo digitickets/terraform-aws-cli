@@ -1,5 +1,9 @@
 # Changelog
 
+# v5.0.2 - 2022/05/26
+
+- Fix for when this module is used in an iteration.
+
 # v5.0.1 - 2022/05/24
 
 - Explicitly specify output type as json for assume role call. Thank you [Niranjan Rajendran](https://github.com/digitickets/terraform-aws-cli/pull/2)
@@ -23,7 +27,7 @@
 
 # v3.1.1 - 2021/03/25
 
-- Rereleasing as accidentally released v3.0.0 as v3.1.0.
+- Re-releasing as accidentally released v3.0.0 as v3.1.0.
 
 # v3.1.0 - 2021/03/25
 
