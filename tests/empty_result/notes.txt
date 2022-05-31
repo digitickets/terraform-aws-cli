@@ -1,0 +1,26 @@
+This test requires Guard Duty. As this is a paid service, the test is disabled.
+
+The test can be enabled by running the following commands with a suitable profile or set of AWS credentials in play.
+
+1. Create the Guard Duty detector
+
+   aws guardduty create-detector --enable
+
+
+2. Get the detector ID
+
+   aws guardduty list-detectors --query='DetectorIds[0]'
+
+
+3. Copy the detector ID reported into terraform.tfvars and update the expected_variables.json file to match, replacing
+   0123456789abcdef0123456789abcdef (unless that's your detector ID of course! ... It COULD happen!)
+
+
+4. Change the RUN_TEST to true in ./test.sh
+
+
+Once you've finished the testing, revert the changes above, and disable the detector using
+
+   aws guardduty delete-detector --detector-id <detector_id>
+
+replacing <detector_id> with the detector ID you extracted in step 2 above.

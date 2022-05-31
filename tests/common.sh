@@ -3,7 +3,7 @@
 TEST_PATH=$(dirname $1)
 TEST_NAME=$(basename $TEST_PATH)
 
-echo "Start  : $TEST_PATH"
+echo "Start   : $TEST_PATH"
 
 TERRAFORM_TFVARS=$TEST_PATH/terraform.tfvars
 EXPECTED_VARIABLES=$TEST_PATH/expected_variables.json
@@ -27,4 +27,4 @@ terraform plan -var-file=$TERRAFORM_TFVARS -out=$PLAN_FILE > $PLAN_LOG_FILE 2> $
 
 run_test
 
-echo "Passed : $TEST_PATH"
+echo "Passed  : $TEST_PATH"

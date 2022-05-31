@@ -1,0 +1,24 @@
+{
+  "assume_role_arn": {
+    "value": ""
+  },
+  "aws_cli_commands": {
+    "value": [
+      "guardduty",
+      "update-detector",
+      "--finding-publishing-frequency",
+      "ONE_HOUR",
+      "--detector-id",
+      "0123456789abcdef0123456789abcdef"
+    ]
+  },
+  "aws_cli_query": {
+    "value": ""
+  },
+  "debug_log_filename": {
+    "value": ""
+  },
+  "role_session_name": {
+    "value": "empty_result"
+  }
+}
