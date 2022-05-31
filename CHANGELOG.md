@@ -1,5 +1,9 @@
 # Changelog
 
+# v5.0.3 - 2022/05/31
+
+- Fix for when the AWS call being made has no output (which is invalid JSON). Thank you [Yaron Yarimi and Pavel Kargin](https://github.com/digitickets/terraform-aws-cli/issues/3)
+
 # v5.0.2 - 2022/05/26
 
 - Fix for when this module is used in an iteration.
