@@ -87,7 +87,7 @@ No modules.
 | <a name="input_aws_cli_commands"></a> [aws\_cli\_commands](#input\_aws\_cli\_commands) | The AWS CLI command and subcommands | `list(string)` | n/a | yes |
 | <a name="input_aws_cli_query"></a> [aws\_cli\_query](#input\_aws\_cli\_query) | The --query value | `string` | `""` | no |
 | <a name="input_debug_log_filename"></a> [debug\_log\_filename](#input\_debug\_log\_filename) | Generate a debug log if a `debug_log_filename` is supplied | `string` | `""` | no |
-| <a name="input_role_session_name"></a> [role\_session\_name](#input\_role\_session\_name) | The role session name | `string` | n/a | yes |
+| <a name="input_role_session_name"></a> [role\_session\_name](#input\_role\_session\_name) | The role session name | `string` | `""` | no |
 
 ## Outputs
 
