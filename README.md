@@ -65,8 +65,8 @@ module "current_desired_capacity" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_external"></a> [external](#provider\_external) | 2.1.0 |
-| <a name="provider_local"></a> [local](#provider\_local) | 2.1.0 |
+| <a name="provider_external"></a> [external](#provider\_external) | 2.2.3 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.2.3 |
 
 ## Modules
 
