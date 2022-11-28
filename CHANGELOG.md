@@ -1,5 +1,9 @@
 # Changelog
 
+# v5.0.4 - 2022/11/28
+
+- Allow `var.role_session_name` to be optional. Thank you [Byron Kim](https://github.com/digitickets/terraform-aws-cli/issues/4)
+
 # v5.0.3 - 2022/05/31
 
 - Fix for when the AWS call being made has no output (which is invalid JSON). Thank you [Yaron Yarimi and Pavel Kargin](https://github.com/digitickets/terraform-aws-cli/issues/3)
