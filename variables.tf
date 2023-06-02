@@ -10,7 +10,7 @@ variable "assume_role_arn" {
 }
 
 variable "external_id" {
-  description = ">xternal id for assuming the role (optional)"
+  description = "External id for assuming the role (optional)"
   type        = string
   default     = ""
 }
