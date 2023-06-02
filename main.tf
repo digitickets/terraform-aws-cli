@@ -27,6 +27,7 @@ data "external" "awscli_program" {
     aws_cli_query      = var.aws_cli_query
     output_file        = local.output_file
     debug_log_filename = var.debug_log_filename
+    external_id        = var.external_id
   }
 }
 

@@ -9,6 +9,12 @@ variable "assume_role_arn" {
   }
 }
 
+variable "external_id" {
+  description = ">xternal id for assuming the role (optional)"
+  type        = string
+  default     = ""
+}
+
 variable "aws_cli_commands" {
   description = "The AWS CLI command and subcommands"
   type        = list(string)
@@ -41,3 +47,4 @@ variable "debug_log_filename" {
   type        = string
   default     = ""
 }
+
