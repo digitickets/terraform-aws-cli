@@ -25,7 +25,7 @@ EXTERNAL_ID=$(echo "${TERRAFORM_QUERY}" | jq -r '.external_id')
 # Do we need to assume a role?
 if [ -n "${ASSUME_ROLE_ARN}" ]; then
   if [-n "${EXTERNAL_ID}"]; then
-    TEMP_ROLE=$(aws sts assume-role --output json --role-arn "${ASSUME_ROLE_ARN}" --external_id "${EXTERNAL_ID}" --role-session-name "${ROLE_SESSION_NAME:-AssumingRole}")
+    TEMP_ROLE=$(aws sts assume-role --output json --role-arn "${ASSUME_ROLE_ARN}" --external-id "${EXTERNAL_ID}" --role-session-name "${ROLE_SESSION_NAME:-AssumingRole}")
   else
     TEMP_ROLE=$(aws sts assume-role --output json --role-arn "${ASSUME_ROLE_ARN}" --role-session-name "${ROLE_SESSION_NAME:-AssumingRole}")
   fi
