@@ -1,5 +1,9 @@
 # Changelog
 
+# v5.1.0 - 2023/07/20
+
+- Introduce support for `var.external_id`. Thank you [Joshua Rosen](https://github.com/digitickets/terraform-aws-cli/pull/6)
+
 # v5.0.4 - 2022/11/28
 
 - Allow `var.role_session_name` to be optional. Thank you [Byron Kim](https://github.com/digitickets/terraform-aws-cli/issues/4)
