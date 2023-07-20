@@ -84,6 +84,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_assume_role_arn"></a> [assume\_role\_arn](#input\_assume\_role\_arn) | The ARN of the role being assumed (optional) | `string` | `""` | no |
+| <a name="input_external_id"></a> [external\_id](#input\_external\_id) | The external ID for assuming the role (optional) | `string` | `""` | no |
 | <a name="input_aws_cli_commands"></a> [aws\_cli\_commands](#input\_aws\_cli\_commands) | The AWS CLI command and subcommands | `list(string)` | n/a | yes |
 | <a name="input_aws_cli_query"></a> [aws\_cli\_query](#input\_aws\_cli\_query) | The --query value | `string` | `""` | no |
 | <a name="input_debug_log_filename"></a> [debug\_log\_filename](#input\_debug\_log\_filename) | Generate a debug log if a `debug_log_filename` is supplied | `string` | `""` | no |

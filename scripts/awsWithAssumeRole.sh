@@ -20,10 +20,15 @@ OUTPUT_FILE=$(echo "${TERRAFORM_QUERY}" | jq -r '.output_file')
 ASSUME_ROLE_ARN=$(echo "${TERRAFORM_QUERY}" | jq -r '.assume_role_arn')
 ROLE_SESSION_NAME=$(echo "${TERRAFORM_QUERY}" | jq -r '.role_session_name')
 DEBUG_LOG_FILENAME=$(echo "${TERRAFORM_QUERY}" | jq -r '.debug_log_filename')
+EXTERNAL_ID=$(echo "${TERRAFORM_QUERY}" | jq -r '.external_id')
 
 # Do we need to assume a role?
 if [ -n "${ASSUME_ROLE_ARN}" ]; then
-  TEMP_ROLE=$(aws sts assume-role --output json --role-arn "${ASSUME_ROLE_ARN}" --role-session-name "${ROLE_SESSION_NAME:-AssumingRole}")
+  if [-n "${EXTERNAL_ID}"]; then
+    TEMP_ROLE=$(aws sts assume-role --output json --role-arn "${ASSUME_ROLE_ARN}" --external-id "${EXTERNAL_ID}" --role-session-name "${ROLE_SESSION_NAME:-AssumingRole}")
+  else
+    TEMP_ROLE=$(aws sts assume-role --output json --role-arn "${ASSUME_ROLE_ARN}" --role-session-name "${ROLE_SESSION_NAME:-AssumingRole}")
+  fi
   export AWS_ACCESS_KEY_ID=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.AccessKeyId')
   export AWS_SECRET_ACCESS_KEY=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SecretAccessKey')
   export AWS_SESSION_TOKEN=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SessionToken')
