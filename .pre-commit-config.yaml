@@ -29,6 +29,8 @@ repos:
           - --indent=2
           - --no-sort-keys
       - id: trailing-whitespace
+        args:
+          - --markdown-linebreak-ext=md
 
   - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
     rev: 0.2.2
