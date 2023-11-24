@@ -1,0 +1,20 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: jq --version; aws --version; terraform --version
+      - run: git clone https://github.com/tfutils/tfenv.git ~/.tfenv
+      - run: ~/.tfenv/bin/tfenv install
+      - uses: actions/checkout@v4
+      - run: tests/tests.sh
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: logs
+          path: test-reports/**/*

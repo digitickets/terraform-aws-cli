@@ -9,6 +9,18 @@ variable "assume_role_arn" {
   }
 }
 
+variable "profile" {
+  description = "The specific AWS profile to use (must be configured appropriately)"
+  type        = string
+  default     = ""
+}
+
+variable "region" {
+  description = "The specific AWS region to use"
+  type        = string
+  default     = ""
+}
+
 variable "external_id" {
   description = "External id for assuming the role (optional)"
   type        = string
@@ -47,4 +59,3 @@ variable "debug_log_filename" {
   type        = string
   default     = ""
 }
-

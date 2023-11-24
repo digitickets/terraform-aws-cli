@@ -52,6 +52,40 @@ module "current_desired_capacity" {
 }
 ```
 
+## 3. Adding your own profile.
+
+Extending the example above, you can supply your own profile by adding a `profile` to the module:
+
+```hcl-terraform
+module "current_desired_capacity" {
+   source            = "digitickets/cli/aws"
+   assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
+   role_session_name = "GettingDesiredCapacityFor${var.environment}"
+   aws_cli_commands  = ["autoscaling", "describe-auto-scaling-groups"]
+   aws_cli_query     = "AutoScalingGroups[?Tags[?Key==`Name`]|[?Value==`digitickets-${var.environment}-asg-app`]]|[0].DesiredCapacity"
+   profile           = "your-own-profile"
+}
+```
+
+## 4. Adding your external ID.
+
+Extending the example above, you can supply your own external ID by adding an `external_id` to the module:
+
+```hcl-terraform
+module "current_desired_capacity" {
+  source            = "digitickets/cli/aws"
+  assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
+  role_session_name = "GettingDesiredCapacityFor${var.environment}"
+  aws_cli_commands  = ["autoscaling", "describe-auto-scaling-groups"]
+  aws_cli_query     = "AutoScalingGroups[?Tags[?Key==`Name`]|[?Value==`digitickets-${var.environment}-asg-app`]]|[0].DesiredCapacity"
+  profile           = "your-own-profile"
+  external_id       = "your-external-id"
+}
+```
+
+Further information regarding the use of external IDs can be found [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html).
+
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
@@ -65,7 +99,7 @@ module "current_desired_capacity" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_external"></a> [external](#provider\_external) | 2.3.1 |
+| <a name="provider_external"></a> [external](#provider\_external) | 2.3.2 |
 | <a name="provider_local"></a> [local](#provider\_local) | 2.4.0 |
 
 ## Modules
@@ -84,10 +118,12 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_assume_role_arn"></a> [assume\_role\_arn](#input\_assume\_role\_arn) | The ARN of the role being assumed (optional) | `string` | `""` | no |
-| <a name="input_external_id"></a> [external\_id](#input\_external\_id) | The external ID for assuming the role (optional) | `string` | `""` | no |
 | <a name="input_aws_cli_commands"></a> [aws\_cli\_commands](#input\_aws\_cli\_commands) | The AWS CLI command and subcommands | `list(string)` | n/a | yes |
 | <a name="input_aws_cli_query"></a> [aws\_cli\_query](#input\_aws\_cli\_query) | The --query value | `string` | `""` | no |
 | <a name="input_debug_log_filename"></a> [debug\_log\_filename](#input\_debug\_log\_filename) | Generate a debug log if a `debug_log_filename` is supplied | `string` | `""` | no |
+| <a name="input_external_id"></a> [external\_id](#input\_external\_id) | External id for assuming the role (optional) | `string` | `""` | no |
+| <a name="input_profile"></a> [profile](#input\_profile) | The specific AWS profile to use (must be configured appropriately) | `string` | `""` | no |
+| <a name="input_region"></a> [region](#input\_region) | The specific AWS region to use | `string` | `""` | no |
 | <a name="input_role_session_name"></a> [role\_session\_name](#input\_role\_session\_name) | The role session name | `string` | `""` | no |
 
 ## Outputs

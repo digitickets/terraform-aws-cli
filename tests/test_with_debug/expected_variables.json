@@ -17,6 +17,15 @@
   "debug_log_filename": {
     "value": "test-reports/test_with_debug/debug.log"
   },
+  "external_id": {
+    "value": ""
+  },
+  "profile": {
+    "value": ""
+  },
+  "region": {
+    "value": "eu-west-1"
+  },
   "role_session_name": {
     "value": "test_with_debug"
   }

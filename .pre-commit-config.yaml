@@ -43,3 +43,8 @@ repos:
           - --offset=2
           - --sequence=4
           - --width=300
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.1
+    hooks:
+      - id: gitleaks

@@ -21,12 +21,12 @@
     "value": ""
   },
   "profile": {
-    "value": ""
+    "value": "this_profile_does_not_exist"
   },
   "region": {
-    "value": "eu-west-1"
+    "value": ""
   },
   "role_session_name": {
-    "value": "test_without_debug"
+    "value": "invalid_profile_without_debug"
   }
 }

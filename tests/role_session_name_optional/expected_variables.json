@@ -17,6 +17,15 @@
   "debug_log_filename": {
     "value": ""
   },
+  "external_id": {
+    "value": ""
+  },
+  "profile": {
+    "value": ""
+  },
+  "region": {
+    "value": "eu-west-1"
+  },
   "role_session_name": {
     "value": ""
   }

@@ -1,34 +1,35 @@
 locals {
   joined_aws_cli_command = join(" ", var.aws_cli_commands)
+  external_program_query = {
+    assume_role_arn    = var.assume_role_arn
+    role_session_name  = var.role_session_name
+    aws_cli_commands   = local.joined_aws_cli_command
+    aws_cli_query      = var.aws_cli_query
+    debug_log_filename = var.debug_log_filename
+    external_id        = var.external_id
+    profile            = var.profile
+    region             = var.region
+  }
   output_file = format(
     "%s/temp/results-%s.json",
     path.module,
     md5(
       join(
         "-",
-        [
-          var.assume_role_arn,
-          var.role_session_name,
-          local.joined_aws_cli_command,
-          var.aws_cli_query,
-          var.debug_log_filename
-        ]
+        values(local.external_program_query)
       )
     )
   )
 }
 
 data "external" "awscli_program" {
-  program = [format("%s/scripts/awsWithAssumeRole.sh", path.module)]
-  query = {
-    assume_role_arn    = var.assume_role_arn
-    role_session_name  = var.role_session_name
-    aws_cli_commands   = local.joined_aws_cli_command
-    aws_cli_query      = var.aws_cli_query
-    output_file        = local.output_file
-    debug_log_filename = var.debug_log_filename
-    external_id        = var.external_id
-  }
+  program = [format("%s/scripts/aws_cli_runner.sh", path.module)]
+  query = merge(
+    local.external_program_query,
+    {
+      output_file = local.output_file
+    }
+  )
 }
 
 data "local_file" "awscli_results_file" {

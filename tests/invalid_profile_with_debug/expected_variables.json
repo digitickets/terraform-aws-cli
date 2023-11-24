@@ -15,18 +15,18 @@
     "value": "max_by(Contents, &Size)"
   },
   "debug_log_filename": {
-    "value": ""
+    "value": "test-reports/invalid_profile_with_debug/debug.log"
   },
   "external_id": {
     "value": ""
   },
   "profile": {
-    "value": ""
+    "value": "this_profile_does_not_exist"
   },
   "region": {
-    "value": "eu-west-1"
+    "value": ""
   },
   "role_session_name": {
-    "value": "test_without_debug"
+    "value": "invalid_profile_with_debug"
   }
 }
