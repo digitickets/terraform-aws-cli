@@ -1,16 +1,23 @@
 # Changelog
 
+# v5.2.0 - 2023/07/20
+
+- Fixed issue introduce in v5.1.0 regarding the use of `var.external_id`.
+- Introduces support for `var.profile` to allow you to supply your own AWS profile. Thank you [coopengo-glecomte](https://github.com/digitickets/terraform-aws-cli/issues/8).
+- Introduces support for `var.region` to allow you to supply your own AWS region.
+- Refactored tests due to changes within Terraform.
+
 # v5.1.0 - 2023/07/20
 
-- Introduce support for `var.external_id`. Thank you [Joshua Rosen](https://github.com/digitickets/terraform-aws-cli/pull/6)
+- Introduce support for `var.external_id`. Thank you [Joshua Rosen](https://github.com/digitickets/terraform-aws-cli/pull/6).
 
 # v5.0.4 - 2022/11/28
 
-- Allow `var.role_session_name` to be optional. Thank you [Byron Kim](https://github.com/digitickets/terraform-aws-cli/issues/4)
+- Allow `var.role_session_name` to be optional. Thank you [Byron Kim](https://github.com/digitickets/terraform-aws-cli/issues/4).
 
 # v5.0.3 - 2022/05/31
 
-- Fix for when the AWS call being made has no output (which is invalid JSON). Thank you [Yaron Yarimi and Pavel Kargin](https://github.com/digitickets/terraform-aws-cli/issues/3)
+- Fix for when the AWS call being made has no output (which is invalid JSON). Thank you [Yaron Yarimi and Pavel Kargin](https://github.com/digitickets/terraform-aws-cli/issues/3).
 
 # v5.0.2 - 2022/05/26
 
@@ -18,7 +25,7 @@
 
 # v5.0.1 - 2022/05/24
 
-- Explicitly specify output type as json for assume role call. Thank you [Niranjan Rajendran](https://github.com/digitickets/terraform-aws-cli/pull/2)
+- Explicitly specify output type as json for assume role call. Thank you [Niranjan Rajendran](https://github.com/digitickets/terraform-aws-cli/pull/2).
 
 # v5.0.0 - 2022/01/27
 
