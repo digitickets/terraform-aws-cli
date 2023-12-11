@@ -26,12 +26,12 @@ REGION_NAME=$(echo "${TERRAFORM_QUERY}" | jq -r '.region')
 
 # Do we have a profile?
 if [ -n "${PROFILE_NAME}" ]; then
-  AWS_CLI_PROFILE_PARAM="--profile '${PROFILE_NAME}'"
+  AWS_CLI_PROFILE_PARAM="--profile=${PROFILE_NAME}"
 fi
 
 # Do we have a region?
 if [ -n "${REGION_NAME}" ]; then
-  AWS_CLI_REGION_PARAM="--region= '${REGION_NAME}'"
+  AWS_CLI_REGION_PARAM="--region=${REGION_NAME}"
 fi
 
 # Do we need to assume a role?
@@ -39,7 +39,7 @@ if [ -n "${ASSUME_ROLE_ARN}" ]; then
 
   # Do we have an external ID?
   if [ -n "${EXTERNAL_ID}" ]; then
-    AWS_CLI_EXTERNAL_ID_PARAM="--external-id '${EXTERNAL_ID}'"
+    AWS_CLI_EXTERNAL_ID_PARAM="--external-id=${EXTERNAL_ID}"
   fi
 
   TEMP_ROLE=$(aws sts assume-role ${AWS_CLI_PROFILE_PARAM:-} ${AWS_CLI_REGION_PARAM:-} --output json --role-arn "${ASSUME_ROLE_ARN}" ${AWS_CLI_EXTERNAL_ID_PARAM:-} --role-session-name "${ROLE_SESSION_NAME:-AssumingRole}")
