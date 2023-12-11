@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/travis/digitickets/terraform-aws-cli.svg?style=for-the-badge&logo=travis)](https://travis-ci.com/digitickets/terraform-aws-cli)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/digitickets/terraform-aws-cli/build.yml?style=for-the-badge&logo=github)](https://github.com/digitickets/terraform-aws-cli/actions/workflows/build.yml)
 [![GitHub issues](https://img.shields.io/github/issues/digitickets/terraform-aws-cli.svg?style=for-the-badge&logo=github)](https://github.com/digitickets/terraform-aws-cli/issues)
 
 # terraform-aws-cli
