@@ -13,7 +13,7 @@ jobs:
       - run: ~/.tfenv/bin/tfenv install
       - uses: actions/checkout@v4
       - run: tests/tests.sh
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: always()
         with:
           name: logs
