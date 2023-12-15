@@ -3,3 +3,4 @@
 /PersonalSettingsMakefile
 .terraform/
 /temp/
+/.env

@@ -1,0 +1,12 @@
+{
+  "alternative_path": "test-reports/terraform_validation_error_region_does_not_match_regex/aws",
+  "assume_role_arn": "",
+  "aws_cli_commands": [
+    "version"
+  ],
+  "aws_cli_query": "",
+  "external_id": "",
+  "profile": "",
+  "region": "US East (Ohio) us-east-2",
+  "role_session_name": ""
+}

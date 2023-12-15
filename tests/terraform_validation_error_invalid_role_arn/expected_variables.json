@@ -1,0 +1,12 @@
+{
+  "alternative_path": "test-reports/terraform_validation_error_invalid_role_arn/aws",
+  "assume_role_arn": "bad_arn",
+  "aws_cli_commands": [
+    "version"
+  ],
+  "aws_cli_query": "",
+  "external_id": "",
+  "profile": "",
+  "region": "",
+  "role_session_name": ""
+}

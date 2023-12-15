@@ -1,0 +1,12 @@
+{
+  "alternative_path": "test-reports/terraform_validation_error_profile_does_not_start_with_a_letter/aws",
+  "assume_role_arn": "",
+  "aws_cli_commands": [
+    "version"
+  ],
+  "aws_cli_query": "",
+  "external_id": "",
+  "profile": "1digit2many",
+  "region": "",
+  "role_session_name": ""
+}

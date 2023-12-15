@@ -1,0 +1,8 @@
+[
+  {
+    "variable": "var.external_id",
+    "problems": [
+      "The length of optional external_id, when supplied, must be between 2 and 1224 characters."
+    ]
+  }
+]

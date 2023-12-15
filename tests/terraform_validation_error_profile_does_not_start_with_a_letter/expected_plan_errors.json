@@ -1,0 +1,8 @@
+[
+  {
+    "variable": "var.profile",
+    "problems": [
+      "The optional profile must start with a letter and can only contain letters, numbers, hyphens, and underscores."
+    ]
+  }
+]

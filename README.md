@@ -6,15 +6,21 @@
 Run the AWS CLI, with the ability to run under an assumed role, to access resources and properties missing from the
 Terraform AWS Provider.
 
-# Requirements
+# Additional requirements
 
-This module requires a couple of additional resources to operate successfully.
+This module requires a couple of additional tools to operate successfully.
 
-1. Amazon Web Service Command Line Interface (awscli)
+1. Amazon Web Service Command Line Interface (`aws`)
    : This is available in several forms [here](https://aws.amazon.com/cli/).
+   As the awscli tool gets updated regularly, any version 2 should be usable, but please try to keep as uptodate as the
+   functionality included in later versions may be what you need when using this module. If you are not getting the
+   functionality you require, please read the
+   [AWS CLI V2 Changelog](https://raw.githubusercontent.com/aws/aws-cli/v2/CHANGELOG.rst) to see if you are just needing
+   to upgrade.
 
-2. JSON processor (jq)
+2. JSON processor (`jq`)
    : This is available [here](https://stedolan.github.io/jq/).
+   At least version `jq-1.5` is required but has been tested and actively used with `jq-1.6`.
 
 # Examples
 
@@ -85,6 +91,7 @@ module "current_desired_capacity" {
 
 Further information regarding the use of external IDs can be found [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html).
 
+# Terraform requirements, providers, resources, etc.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
@@ -117,14 +124,14 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_assume_role_arn"></a> [assume\_role\_arn](#input\_assume\_role\_arn) | The ARN of the role being assumed (optional) | `string` | `""` | no |
-| <a name="input_aws_cli_commands"></a> [aws\_cli\_commands](#input\_aws\_cli\_commands) | The AWS CLI command and subcommands | `list(string)` | n/a | yes |
-| <a name="input_aws_cli_query"></a> [aws\_cli\_query](#input\_aws\_cli\_query) | The --query value | `string` | `""` | no |
-| <a name="input_debug_log_filename"></a> [debug\_log\_filename](#input\_debug\_log\_filename) | Generate a debug log if a `debug_log_filename` is supplied | `string` | `""` | no |
-| <a name="input_external_id"></a> [external\_id](#input\_external\_id) | External id for assuming the role (optional) | `string` | `""` | no |
-| <a name="input_profile"></a> [profile](#input\_profile) | The specific AWS profile to use (must be configured appropriately) | `string` | `""` | no |
-| <a name="input_region"></a> [region](#input\_region) | The specific AWS region to use | `string` | `""` | no |
-| <a name="input_role_session_name"></a> [role\_session\_name](#input\_role\_session\_name) | The role session name | `string` | `""` | no |
+| <a name="input_alternative_path"></a> [alternative\_path](#input\_alternative\_path) | Use an alternative path for all files produced internally | `string` | `""` | no |
+| <a name="input_assume_role_arn"></a> [assume\_role\_arn](#input\_assume\_role\_arn) | The ARN of the role being assumed (optional).<br><br>  The optional ARN must match the format documented in https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html. | `string` | `""` | no |
+| <a name="input_aws_cli_commands"></a> [aws\_cli\_commands](#input\_aws\_cli\_commands) | The AWS CLI command, subcommands, and options.<br><br>  For options that can accept a value, then the following examples are both fine to use:<br>  1. `"--option", "value"`<br>  2. `"--option=value"`<br><br>  In the event that the value contains a space, it must be wrapped with quotes.<br>  1. `"--option", "'value with a space wrapped in single quotes'"`<br>  2. `"--option='value with a space wrapped in single quotes'"` | `list(string)` | n/a | yes |
+| <a name="input_aws_cli_query"></a> [aws\_cli\_query](#input\_aws\_cli\_query) | The `--query` value for the AWS CLI call.<br><br>  The value for `var.aws_cli_query` is based upon JMESPath, and you can get good information from https://jmespath.org.<br>  If not supplied, then the entire results from the AWS CLI call will be returned. | `string` | `""` | no |
+| <a name="input_external_id"></a> [external\_id](#input\_external\_id) | External id for assuming the role (optional).<br><br>  The length of optional external\_id, when supplied, must be between 2 and 1224 characters.<br>  The optional external\_id can only contain upper- and lower-case alphanumeric characters with no spaces. You can also include underscores or any of the following characters: `=,.@-`.<br>  The optional external\_id match the regular expression `^[\w=php]*$`. | `string` | `""` | no |
+| <a name="input_profile"></a> [profile](#input\_profile) | The specific AWS profile to use (must be configured appropriately and is optional).<br><br>  The optional profile must start with a letter and can only contain letters, numbers, hyphens, and underscores. | `string` | `""` | no |
+| <a name="input_region"></a> [region](#input\_region) | The specific AWS region to use.<br><br>  The region must start with two letters representing the geographical area, followed by one or more letters or digits representing the specific region within that area. | `string` | `""` | no |
+| <a name="input_role_session_name"></a> [role\_session\_name](#input\_role\_session\_name) | The role session name that will be used when assuming a role (optional)<br><br>  The length of the optional role session name, when supplied, must be between 2 and 64 characters.<br>  The optional role session name can only contain upper- and lower-case alphanumeric characters with no spaces. You can also include underscores or any of the following characters: `=,.@-`.<br>  The optional role session name match the regular expression `^[\w=,.@-]*$`.<br><br>  If the assume\_role\_arn is supplied, but the role\_session\_name is left empty, an internal default of "AssumingRole" will be used. | `string` | `""` | no |
 
 ## Outputs
 

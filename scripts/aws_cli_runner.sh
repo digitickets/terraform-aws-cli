@@ -1,69 +1,106 @@
 #!/usr/bin/env sh
 
 # Validate required commands
-if ! [ -x "$(command -v aws)" ]; then
-  echo 'Error: aws is not installed.' >&2
+if [ ! -x "$(command -v aws)" ]; then
+  echo '{"error":"aws cli is not installed"}'
   exit 1
 fi
-if ! [ -x "$(command -v jq)" ]; then
-  echo 'Error: jq is not installed.' >&2
-  exit 1
+if [ ! -x "$(command -v jq)" ]; then
+  echo '{"error":"jq is not installed"}'
+  exit 2
 fi
 
-# Get the query
-TERRAFORM_QUERY=$(jq -Mc .)
+# Validate required results file as the first argument
+if [ -z "${1}" ]; then
+  echo '{"error":"No results filename supplied"}'
+  exit 3
+fi
+
+# Extract directory from results file name for all logs.
+RESULTS_FILE="${1}"
+ROOT_DIRECTORY=$(dirname "${RESULTS_FILE}")
+
+# Build all the paths for all the files.
+## JQ json and error log
+JQ_JSON="${ROOT_DIRECTORY}/jq_data.json"
+JQ_ERROR_LOG="${ROOT_DIRECTORY}/jq_error.log"
+
+## AWS STS json and error log
+AWS_STS_JSON="${ROOT_DIRECTORY}/aws_sts.json"
+AWS_STS_ERROR_LOG="${ROOT_DIRECTORY}/aws_sts_error.log"
+
+## The actual AWS call json and error log
+AWS_CALL_JSON="${ROOT_DIRECTORY}/aws_call.json"
+AWS_CALL_ERROR_LOG="${ROOT_DIRECTORY}/aws_call_error.log"
+
+# Remove any files that would match the above list
+mkdir -p "${ROOT_DIRECTORY}"
+rm -rf \
+  "${JQ_JSON}" \
+  "${JQ_ERROR_LOG}" \
+  "${AWS_STS_JSON}" \
+  "${AWS_STS_ERROR_LOG}" \
+  "${AWS_CALL_JSON}" \
+  "${AWS_CALL_ERROR_LOG}" \
+  "${RESULTS_FILE}" \
+
+# Get the query and store it
+jq -Mcr . >"${JQ_JSON}" 2>"${JQ_ERROR_LOG}"
 
 # Extract the query attributes
-AWS_CLI_COMMANDS=$(echo "${TERRAFORM_QUERY}" | jq -r '.aws_cli_commands')
-AWS_CLI_QUERY=$(echo "${TERRAFORM_QUERY}" | jq -r '.aws_cli_query')
-OUTPUT_FILE=$(echo "${TERRAFORM_QUERY}" | jq -r '.output_file')
-ASSUME_ROLE_ARN=$(echo "${TERRAFORM_QUERY}" | jq -r '.assume_role_arn')
-ROLE_SESSION_NAME=$(echo "${TERRAFORM_QUERY}" | jq -r '.role_session_name')
-DEBUG_LOG_FILENAME=$(echo "${TERRAFORM_QUERY}" | jq -r '.debug_log_filename')
-EXTERNAL_ID=$(echo "${TERRAFORM_QUERY}" | jq -r '.external_id')
-PROFILE_NAME=$(echo "${TERRAFORM_QUERY}" | jq -r '.profile')
-REGION_NAME=$(echo "${TERRAFORM_QUERY}" | jq -r '.region')
+AWS_CLI_COMMANDS=$( jq -r '.aws_cli_commands'  "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+AWS_CLI_QUERY=$(    jq -r '.aws_cli_query'     "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+ASSUME_ROLE_ARN=$(  jq -r '.assume_role_arn'   "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+ROLE_SESSION_NAME=$(jq -r '.role_session_name' "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+EXTERNAL_ID=$(      jq -r '.external_id'       "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+PROFILE_NAME=$(     jq -r '.profile'           "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+REGION_NAME=$(      jq -r '.region'            "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+KEEP_LOGS=$(        jq -r '.keep_logs'         "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
 
-# Do we have a profile?
+# Build the required parameters for the AWS calls.
+
+## Do we have a profile?
 if [ -n "${PROFILE_NAME}" ]; then
-  AWS_CLI_PROFILE_PARAM="--profile '${PROFILE_NAME}'"
+  AWS_CLI_PROFILE_PARAM="--profile=${PROFILE_NAME}"
 fi
 
-# Do we have a region?
+## Do we have a region?
 if [ -n "${REGION_NAME}" ]; then
-  AWS_CLI_REGION_PARAM="--region '${REGION_NAME}'"
+  AWS_CLI_REGION_PARAM="--region=${REGION_NAME}"
 fi
 
-# Do we need to assume a role?
+## Do we need to assume a role?
 if [ -n "${ASSUME_ROLE_ARN}" ]; then
 
-  # Do we have an external ID?
+  ### Do we have an external ID?
   if [ -n "${EXTERNAL_ID}" ]; then
-    AWS_CLI_EXTERNAL_ID_PARAM="--external-id '${EXTERNAL_ID}'"
+    AWS_CLI_EXTERNAL_ID_PARAM="--external-id=${EXTERNAL_ID}"
   fi
 
-  TEMP_ROLE=$(aws sts assume-role ${AWS_CLI_PROFILE_PARAM:-} ${AWS_CLI_REGION_PARAM:-} --output json --role-arn "${ASSUME_ROLE_ARN}" ${AWS_CLI_EXTERNAL_ID_PARAM:-} --role-session-name "${ROLE_SESSION_NAME:-AssumingRole}")
-  export AWS_ACCESS_KEY_ID=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.AccessKeyId')
-  export AWS_SECRET_ACCESS_KEY=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SecretAccessKey')
-  export AWS_SESSION_TOKEN=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SessionToken')
+  ### Get temporary credentials from AWS STS
+  if ! eval "aws sts assume-role \
+    --role-arn ${ASSUME_ROLE_ARN} \
+    ${AWS_CLI_EXTERNAL_ID_PARAM:-} \
+    --role-session-name ${ROLE_SESSION_NAME:-AssumingRole} \
+    --output json \
+    --debug
+    ${AWS_CLI_PROFILE_PARAM:-} \
+    ${AWS_CLI_REGION_PARAM:-} \
+    " \
+    >"${AWS_STS_JSON}" \
+    2>"${AWS_STS_ERROR_LOG}"; then
+      echo '{"error":"The call to AWS to get temporary credentials failed"}' >&2
+      exit 4
+    fi
+  export AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' "$AWS_STS_JSON")
+  export AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' "$AWS_STS_JSON")
+  export AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' "$AWS_STS_JSON")
 fi
 
 # Do we have a query?
 if [ -n "${AWS_CLI_QUERY}" ]; then
-  AWS_CLI_QUERY_PARAM="--query '${AWS_CLI_QUERY}'"
+  AWS_CLI_QUERY_PARAM="--query='${AWS_CLI_QUERY}'"
 fi
-
-# Do we want to be debug?
-if [ -n "${DEBUG_LOG_FILENAME}" ]; then
-  AWS_DEBUG_OPTION="--debug 2>${DEBUG_LOG_FILENAME}"
-  mkdir -p "$(dirname ${DEBUG_LOG_FILENAME})"
-fi
-
-# Make sure output file directory exists
-mkdir -p "$(dirname ${OUTPUT_FILE})"
-
-# Make sure output file does not exist
-rm -f "${OUTPUT_FILE}"
 
 # Disable any assigned pager
 export AWS_PAGER=""
@@ -71,11 +108,34 @@ export AWS_PAGER=""
 # Configure adaptive retry mode
 export AWS_RETRY_MODE=adaptive
 
-# Run the AWS_CLI command, exiting with a non zero exit code if required.
-if ! eval "aws ${AWS_CLI_COMMANDS} ${AWS_CLI_PROFILE_PARAM:-} ${AWS_CLI_REGION_PARAM:-} ${AWS_CLI_QUERY_PARAM:-} --output json ${AWS_DEBUG_OPTION:-}" >"${OUTPUT_FILE}" ; then
-  echo "Error: aws failed."
-  exit 1
+# Run the AWS_CLI command
+AWS_COMMAND_LINE=""
+if ! eval "aws \
+  ${AWS_CLI_COMMANDS} \
+  ${AWS_CLI_PROFILE_PARAM:-} \
+  ${AWS_CLI_REGION_PARAM:-} \
+  ${AWS_CLI_QUERY_PARAM:-} \
+  --output json \
+  " \
+  >"${AWS_CALL_JSON}" \
+  2> "${AWS_CALL_ERROR_LOG}"; then
+  # Convert the error into a JSON string and exit
+  jq -MRcs '{"error":gsub("^\n+|\n+$"; "")}' "${AWS_CALL_ERROR_LOG}" > "${RESULTS_FILE}"
+  cat "${RESULTS_FILE}"
+  exit 0
 fi
 
 # All is good.
-echo '{"output_file":"'"${OUTPUT_FILE}"'"}'
+cp "${AWS_CALL_JSON}" "${RESULTS_FILE}"
+echo '{"result":"'"${RESULTS_FILE}"'"}'
+
+# Clean up, but allow a test mode to retain all files except the result
+if [ "${MODULE_TERRAFORM_AWS_CLI_RETAIN_LOGS}" != "true" ]; then
+  rm -rf \
+    "${JQ_JSON}" \
+    "${JQ_ERROR_LOG}" \
+    "${AWS_STS_JSON}" \
+    "${AWS_STS_ERROR_LOG}" \
+    "${AWS_CALL_JSON}" \
+    "${AWS_CALL_ERROR_LOG}"
+fi

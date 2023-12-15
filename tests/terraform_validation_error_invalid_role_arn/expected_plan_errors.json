@@ -1,0 +1,8 @@
+[
+  {
+    "variable": "var.assume_role_arn",
+    "problems": [
+      "The optional ARN must match the format documented in https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html."
+    ]
+  }
+]

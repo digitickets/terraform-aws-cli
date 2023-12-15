@@ -1,0 +1,12 @@
+{
+  "alternative_path": "test-reports/terraform_validation_error_role_session_name_too_short/aws",
+  "assume_role_arn": "",
+  "aws_cli_commands": [
+    "version"
+  ],
+  "aws_cli_query": "",
+  "external_id": "",
+  "profile": "",
+  "region": "",
+  "role_session_name": "1"
+}

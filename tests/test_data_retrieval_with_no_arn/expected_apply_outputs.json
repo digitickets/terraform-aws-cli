@@ -1,0 +1,13 @@
+{
+  "result": {
+    "ETag": "\"a609253bd231c6c7b3153f5b2bc4342a-2694\"",
+    "Key": "wikipedia-20150518.bin",
+    "LastModified": "2017-06-22T14:54:07+00:00",
+    "Owner": {
+      "DisplayName": "CMS-BlackLynx-AWSProducts",
+      "ID": "0ae8f910a30bc83fd81c4e3c1a6bbd9bab0afe4e0762b56a2807d22fcd77d517"
+    },
+    "Size": 22593382637,
+    "StorageClass": "STANDARD"
+  }
+}

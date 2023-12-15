@@ -1,0 +1,12 @@
+{
+  "alternative_path": "test-reports/terraform_validation_error_external_id_invalid_characters/aws",
+  "assume_role_arn": "",
+  "aws_cli_commands": [
+    "version"
+  ],
+  "aws_cli_query": "",
+  "external_id": "1 space 2",
+  "profile": "",
+  "region": "",
+  "role_session_name": ""
+}

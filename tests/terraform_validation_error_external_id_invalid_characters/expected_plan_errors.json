@@ -1,0 +1,8 @@
+[
+  {
+    "variable": "var.external_id",
+    "problems": [
+      "The optional external_id must match the regular expression '^[\\w=,.@-]*$'."
+    ]
+  }
+]

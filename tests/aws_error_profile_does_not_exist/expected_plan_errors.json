@@ -1,0 +1,8 @@
+[
+  {
+    "variable": "data.local_file.awscli_results_file",
+    "problems": [
+      "The config profile (non-existent-profile) could not be found"
+    ]
+  }
+]

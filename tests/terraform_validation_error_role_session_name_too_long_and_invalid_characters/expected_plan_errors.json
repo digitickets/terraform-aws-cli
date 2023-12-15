@@ -1,0 +1,9 @@
+[
+  {
+    "variable": "var.role_session_name",
+    "problems": [
+      "The length of the optional role session name, when supplied, must be between 2 and 64 characters.",
+      "The role session name match the regular expression '^[\\w=,.@-]*$'."
+    ]
+  }
+]

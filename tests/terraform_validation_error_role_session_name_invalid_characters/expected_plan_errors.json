@@ -1,0 +1,8 @@
+[
+  {
+    "variable": "var.role_session_name",
+    "problems": [
+      "The role session name match the regular expression '^[\\w=,.@-]*$'."
+    ]
+  }
+]

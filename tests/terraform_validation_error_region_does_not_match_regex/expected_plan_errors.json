@@ -1,0 +1,8 @@
+[
+  {
+    "variable": "var.region",
+    "problems": [
+      "The optional region must start with two letters representing the geographical area, followed by one or more letters or digits representing the specific region within that area."
+    ]
+  }
+]
