@@ -98,7 +98,7 @@ Further information regarding the use of external IDs can be found [here](https:
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.15 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.6.0 |
 | <a name="requirement_external"></a> [external](#requirement\_external) | ~> 2.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | ~> 2.0 |
 

@@ -7,14 +7,29 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        terraform_version: [1.6.6, 1.6.5, 1.6.4, 1.6.3, 1.6.2, 1.6.1, 1.6.0]
+
     steps:
-      - run: jq --version; aws --version; terraform --version
-      - run: git clone https://github.com/tfutils/tfenv.git ~/.tfenv
-      - run: ~/.tfenv/bin/tfenv install
-      - uses: actions/checkout@v4
-      - run: tests/tests.sh
-      - uses: actions/upload-artifact@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up tfenv and terraform
+        run: |
+          git clone https://github.com/tfutils/tfenv.git $HOME/.tfenv
+          echo "$HOME/.tfenv/bin" >> $GITHUB_PATH
+          echo ${{ matrix.terraform_version }} > .terraform-version
+          tfenv install ${{ matrix.terraform_version }}
+          tfenv use ${{ matrix.terraform_version }}
+
+      - name: Run tests
+        run: |
+          tests/tests.sh
+
+      - name: Capture logs
+        uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: logs
+          name: logs-${{ matrix.terraform_version }}
           path: test-reports/**/*
