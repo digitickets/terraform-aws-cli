@@ -15,10 +15,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up tfenv and terraform
+      - name: Install tfenv
         run: |
           git clone https://github.com/tfutils/tfenv.git $HOME/.tfenv
           echo "$HOME/.tfenv/bin" >> $GITHUB_PATH
+
+      - name: Install Terraform v${{ matrix.terraform_version }}
+        run: |
           echo ${{ matrix.terraform_version }} > .terraform-version
           tfenv install ${{ matrix.terraform_version }}
           tfenv use ${{ matrix.terraform_version }}
