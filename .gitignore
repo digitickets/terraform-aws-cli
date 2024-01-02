@@ -1,6 +1,6 @@
 /test-reports/
 .idea/
 /PersonalSettingsMakefile
+/.env
 .terraform/
 /temp/
-/.env
