@@ -83,7 +83,7 @@ if [ -n "${ASSUME_ROLE_ARN}" ]; then
     ${AWS_CLI_EXTERNAL_ID_PARAM:-} \
     --role-session-name ${ROLE_SESSION_NAME:-AssumingRole} \
     --output json \
-    --debug
+    --debug \
     ${AWS_CLI_PROFILE_PARAM:-} \
     ${AWS_CLI_REGION_PARAM:-} \
     " \
@@ -110,19 +110,37 @@ export AWS_RETRY_MODE=adaptive
 
 # Run the AWS_CLI command
 AWS_COMMAND_LINE=""
-if ! eval "aws \
-  ${AWS_CLI_COMMANDS} \
-  ${AWS_CLI_PROFILE_PARAM:-} \
-  ${AWS_CLI_REGION_PARAM:-} \
-  ${AWS_CLI_QUERY_PARAM:-} \
-  --output json \
-  " \
-  >"${AWS_CALL_JSON}" \
-  2> "${AWS_CALL_ERROR_LOG}"; then
-  # Convert the error into a JSON string and exit
-  jq -MRcs '{"error":gsub("^\n+|\n+$"; "")}' "${AWS_CALL_ERROR_LOG}" > "${RESULTS_FILE}"
-  cat "${RESULTS_FILE}"
-  exit 0
+
+# If we used a profile to assume a role, exclude profile param from AWSCLI execution
+if [[ -n ${AWS_CLI_PROFILE_PARAM} && -n "${ASSUME_ROLE_ARN}" ]]; then
+  if ! eval "aws \
+    ${AWS_CLI_COMMANDS} \
+    ${AWS_CLI_REGION_PARAM:-} \
+    ${AWS_CLI_QUERY_PARAM:-} \
+    --output json \
+    " \
+    >"${AWS_CALL_JSON}" \
+    2> "${AWS_CALL_ERROR_LOG}"; then
+    # Convert the error into a JSON string and exit
+    jq -MRcs '{"error":gsub("^\n+|\n+$"; "")}' "${AWS_CALL_ERROR_LOG}" > "${RESULTS_FILE}"
+    cat "${RESULTS_FILE}"
+    exit 0
+  fi
+else
+  if ! eval "aws \
+    ${AWS_CLI_COMMANDS} \
+    ${AWS_CLI_PROFILE_PARAM:-} \
+    ${AWS_CLI_REGION_PARAM:-} \
+    ${AWS_CLI_QUERY_PARAM:-} \
+    --output json \
+    " \
+    >"${AWS_CALL_JSON}" \
+    2> "${AWS_CALL_ERROR_LOG}"; then
+    # Convert the error into a JSON string and exit
+    jq -MRcs '{"error":gsub("^\n+|\n+$"; "")}' "${AWS_CALL_ERROR_LOG}" > "${RESULTS_FILE}"
+    cat "${RESULTS_FILE}"
+    exit 0
+  fi
 fi
 
 # All is good.
