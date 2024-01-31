@@ -1,5 +1,8 @@
 # Changelog
 
+# v6.0.2 - 2024/01/31
+- FIX : Typo in `aws_cli_runner.sh` when running assuming a role. Thank you [Garrett Blinkhorn](https://github.com/digitickets/terraform-aws-cli/issues/11).
+
 # v6.0.1 - 2023/12/22
 - Set the minimum version of Terraform to v1.6.0 as that is the lowest version to support `data.lifecycle` block.
 

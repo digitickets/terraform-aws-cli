@@ -83,7 +83,7 @@ if [ -n "${ASSUME_ROLE_ARN}" ]; then
     ${AWS_CLI_EXTERNAL_ID_PARAM:-} \
     --role-session-name ${ROLE_SESSION_NAME:-AssumingRole} \
     --output json \
-    --debug
+    --debug \
     ${AWS_CLI_PROFILE_PARAM:-} \
     ${AWS_CLI_REGION_PARAM:-} \
     " \
