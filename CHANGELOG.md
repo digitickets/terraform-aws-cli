@@ -1,5 +1,11 @@
 # Changelog
 
+# v6.1.0 - 2024/01/31
+- Added testing for Terraform 1.7+
+- FIX : If `var.profile` and `var.assume_role_arn` are used, then continuing to use `var.profile` invalidates the
+  assumed role. The `aws_cli_runner.sh` now no longer uses `var.profile` when a role has been successfully assumed.
+  Thank you [Garrett Blinkhorn](https://github.com/digitickets/terraform-aws-cli/issues/11).
+
 # v6.0.2 - 2024/01/31
 - FIX : Typo in `aws_cli_runner.sh` when running assuming a role. Thank you [Garrett Blinkhorn](https://github.com/digitickets/terraform-aws-cli/issues/11).
 

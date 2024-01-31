@@ -95,6 +95,13 @@ if [ -n "${ASSUME_ROLE_ARN}" ]; then
   export AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' "$AWS_STS_JSON")
   export AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' "$AWS_STS_JSON")
   export AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' "$AWS_STS_JSON")
+
+  ### Having assumed a role, drop the profile as that will override any credentials retrieved by the assumed role when
+  ### reused as part of the AWS CLI call.
+  ### References :
+  ### 1. https://github.com/digitickets/terraform-aws-cli/issues/11 - Thank you Garrett Blinkhorn.
+  ### 2. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html#using-temp-creds-sdk-cli
+  unset AWS_CLI_PROFILE_PARAM
 fi
 
 # Do we have a query?

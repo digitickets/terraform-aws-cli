@@ -137,7 +137,7 @@ function run_function() {
   fi
 }
 
-function  common_setup() {
+function common_setup() {
   TEST_PATH=$(dirname "${1}")
   TEST_NAME=$(basename "${TEST_PATH}")
 
@@ -190,7 +190,7 @@ function  common_setup() {
   export MODULE_TERRAFORM_AWS_CLI_RETAIN_LOGS=true
 }
 
-function  run_test() {
+function run_test() {
   if [ "${ALLOW_PLAN}" == "true" ]; then
     # Turn off coloured Terraform output (makes logs a little easier to read in an IDE)
     export TF_CLI_ARGS="-no-color"
