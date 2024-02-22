@@ -46,7 +46,7 @@ variable "external_id" {
 
   The length of optional external_id, when supplied, must be between 2 and 1224 characters.
   The optional external_id can only contain upper- and lower-case alphanumeric characters with no spaces. You can also include underscores or any of the following characters: `=,.@-`.
-  The optional external_id match the regular expression `^[\w=php]*$`.
+  The optional external_id match the regular expression `^[\w=,.@-]*$`.
 EOD
   type        = string
   default     = ""

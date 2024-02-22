@@ -1,5 +1,8 @@
 # Changelog
 
+# Unreleased - 2024/02/22
+- Fix a typo in the description for the `var.external_id`.
+
 # v6.1.0 - 2024/01/31
 - Added testing for Terraform 1.7+
 - FIX : If `var.profile` and `var.assume_role_arn` are used, then continuing to use `var.profile` invalidates the
