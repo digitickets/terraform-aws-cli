@@ -93,7 +93,7 @@ Further information regarding the use of external IDs can be found [here](https:
 
 # Terraform requirements, providers, resources, etc.
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -106,8 +106,8 @@ Further information regarding the use of external IDs can be found [here](https:
 
 | Name | Version |
 |------|---------|
-| <a name="provider_external"></a> [external](#provider\_external) | 2.3.2 |
-| <a name="provider_local"></a> [local](#provider\_local) | 2.4.1 |
+| <a name="provider_external"></a> [external](#provider\_external) | 2.3.3 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.5.1 |
 
 ## Modules
 
@@ -138,7 +138,7 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_result"></a> [result](#output\_result) | The output of the AWS CLI command |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
 
 # Docker
 
