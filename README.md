@@ -137,7 +137,9 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_result"></a> [result](#output\_result) | The output of the AWS CLI command |
+| <a name="output_result"></a> [result](#output\_result) | The output of the AWS CLI command, if it can be JSON decoded |
+| <a name="output_result_raw"></a> [result\_raw](#output\_result\_raw) | The raw, non JSON decoded output of the AWS CLI command |
+| <a name="output_result_was_decoded"></a> [result\_was\_decoded](#output\_result\_was\_decoded) | Can the output from the AWS CLI command can be JSON decoded |
 <!-- END_TF_DOCS -->
 
 # Docker

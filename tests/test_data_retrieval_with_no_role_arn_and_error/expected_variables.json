@@ -1,5 +1,5 @@
 {
-  "alternative_path": "test-reports/test_data_retrieval_with_no_arn/aws",
+  "alternative_path": "test-reports/test_data_retrieval_with_no_role_arn_and_error/aws",
   "assume_role_arn": "",
   "aws_cli_commands": [
     "s3api",

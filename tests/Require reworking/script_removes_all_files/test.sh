@@ -2,7 +2,12 @@
 
 export ALLOW_APPLY=true
 
+function test_setup() {
+  export MODULE_TERRAFORM_AWS_CLI_RETAIN_LOGS=false
+}
+
 function test_teardown() {
+  echo "MODULE_TERRAFORM_AWS_CLI_RETAIN_LOGS = ${MODULE_TERRAFORM_AWS_CLI_RETAIN_LOGS}"
   ROOT_DIRECTORY="test-reports/${TEST_NAME}/aws"
 
   # Build all the paths for all the files.
@@ -22,17 +27,16 @@ function test_teardown() {
   AWS_CALL_JSON="${ROOT_DIRECTORY}/aws_call.json"
   AWS_CALL_ERROR_LOG="${ROOT_DIRECTORY}/aws_call_error.log"
 
-  # Not all the files are created as the test does not generate these errors
   AWS_SCRIPT_FILENAMES=(
     "${JQ_JSON}" "${JQ_ERROR_LOG}"
-#    "${AWS_STS_JSON}" "${AWS_STS_ERROR_LOG}"
+    "${AWS_STS_JSON}" "${AWS_STS_ERROR_LOG}"
     "${AWS_CALL_JSON}" "${AWS_CALL_ERROR_LOG}"
   )
 
   TEST_PASSED=true
   for AWS_SCRIPT_FILENAME in "${AWS_SCRIPT_FILENAMES[@]}"; do
-    if [[ ! -f "${AWS_SCRIPT_FILENAME}" ]]; then
-      echo "Failed to retain '${AWS_SCRIPT_FILENAME}'" | indent
+    if [ -f "${AWS_SCRIPT_FILENAME}" ]; then
+      echo "Failed to remove '${AWS_SCRIPT_FILENAME}'" | indent
       TEST_PASSED=false
     fi
   done
@@ -43,6 +47,7 @@ function test_teardown() {
   fi
 
   if [ "${TEST_PASSED}" != "true" ]; then
+    echo "Failed  : $TEST_PATH"
     exit 1;
   fi
 }

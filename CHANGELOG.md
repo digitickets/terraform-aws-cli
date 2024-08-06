@@ -1,7 +1,13 @@
 # Changelog
 
-# Unreleased - 2024/02/22
+# v7.0.0 - 2024/08/06
 - Fix a typo in the description for the `var.external_id`.
+- Fix handling of invalid JSON returned from the AWS CLI. Thank you [홍수민 and horststumpf](https://github.com/digitickets/terraform-aws-cli/pull/19).
+- Introduced 2 new outputs:
+  - `output.result_raw = string` - This will contain the raw output from the AWS CLI call.
+  - `output.result_was_decoded = bool` - This will indicated if the output from the AWS CLI call was successfully JSON decoded.
+
+  These were introduced as some of the results from the AWS CLI are not JSON decodable. For example `aws ec2 create-tags` returns nothing.
 
 # v6.1.0 - 2024/01/31
 - Added testing for Terraform 1.7+

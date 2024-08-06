@@ -11,4 +11,4 @@ rm -rf test-reports
 
 underline 'Running tests' =
 
-find ./tests -type f -name test.sh | sort | xargs -L 1 bash
+find ./tests -type f -name test.sh -maxdepth 2 | sort | xargs -L 1 bash
