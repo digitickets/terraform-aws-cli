@@ -4,7 +4,7 @@ aws_cli_commands = [
   "update-detector",
   "--finding-publishing-frequency",
   "ONE_HOUR",
-  "--detector-id=01234567890123456789012345678901"
+  "--detector-id="
 ]
 role_session_name = "empty_result"
 
