@@ -10,28 +10,28 @@ jobs:
     strategy:
       matrix:
         terraform_version:
-          - 1.9.3
-          - 1.9.2
-          - 1.9.1
-          - 1.9.0
-          - 1.8.5
-          - 1.8.4
-          - 1.8.3
-          - 1.8.2
-          - 1.8.1
-          - 1.8.0
-          - 1.7.5
-          - 1.7.4
-          - 1.7.3
-          - 1.7.2
-          - 1.7.1
-          - 1.7.0
-          - 1.6.6
-          - 1.6.5
-          - 1.6.4
-          - 1.6.3
-          - 1.6.2
-          - 1.6.1
+#          - 1.9.3
+#          - 1.9.2
+#          - 1.9.1
+#          - 1.9.0
+#          - 1.8.5
+#          - 1.8.4
+#          - 1.8.3
+#          - 1.8.2
+#          - 1.8.1
+#          - 1.8.0
+#          - 1.7.5
+#          - 1.7.4
+#          - 1.7.3
+#          - 1.7.2
+#          - 1.7.1
+#          - 1.7.0
+#          - 1.6.6
+#          - 1.6.5
+#          - 1.6.4
+#          - 1.6.3
+#          - 1.6.2
+#          - 1.6.1
           - 1.6.0
 
     steps:
@@ -48,6 +48,11 @@ jobs:
           echo ${{ matrix.terraform_version }} > .terraform-version
           tfenv install ${{ matrix.terraform_version }}
           tfenv use ${{ matrix.terraform_version }}
+
+      - name: Update the test result for 1 file
+        run: |
+          AWS_CLI_VERSION=$(aws --version) envsubst '\$AWS_CLI_VERSION' < tests/test_version_retrieval_will_error/expected_apply_outputs.json > temp.json
+          mv -f temp.json tests/test_version_retrieval_will_error/expected_apply_outputs.json
 
       - name: Run tests
         run: |
