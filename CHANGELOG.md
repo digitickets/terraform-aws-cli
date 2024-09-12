@@ -1,11 +1,14 @@
 # Changelog
 
+# Unreleased
+- Add v1.94, and v1.9.5 to the list of versions to run the tests against.
+
 # v7.0.0 - 2024/08/06
 - Fix a typo in the description for the `var.external_id`.
-- Fix handling of invalid JSON returned from the AWS CLI. Thank you [홍수민 and horststumpf](https://github.com/digitickets/terraform-aws-cli/pull/19).
+- Fix handling of invalid JSON returned from the AWS CLI. Thank you, [홍수민 and horststumpf](https://github.com/digitickets/terraform-aws-cli/pull/19).
 - Introduced 2 new outputs:
   - `output.result_raw = string` - This will contain the raw output from the AWS CLI call.
-  - `output.result_was_decoded = bool` - This will indicated if the output from the AWS CLI call was successfully JSON decoded.
+  - `output.result_was_decoded = bool` - This will indicate if the output from the AWS CLI call was successfully JSON decoded.
 
   These were introduced as some of the results from the AWS CLI are not JSON decodable. For example `aws ec2 create-tags` returns nothing.
 
@@ -13,10 +16,10 @@
 - Added testing for Terraform 1.7+
 - FIX : If `var.profile` and `var.assume_role_arn` are used, then continuing to use `var.profile` invalidates the
   assumed role. The `aws_cli_runner.sh` now no longer uses `var.profile` when a role has been successfully assumed.
-  Thank you [Garrett Blinkhorn](https://github.com/digitickets/terraform-aws-cli/issues/11).
+  Thank you, [Garrett Blinkhorn](https://github.com/digitickets/terraform-aws-cli/issues/11).
 
 # v6.0.2 - 2024/01/31
-- FIX : Typo in `aws_cli_runner.sh` when running assuming a role. Thank you [Garrett Blinkhorn](https://github.com/digitickets/terraform-aws-cli/issues/11).
+- FIX : Typo in `aws_cli_runner.sh` when running assuming a role. Thank you, [Garrett Blinkhorn](https://github.com/digitickets/terraform-aws-cli/issues/11).
 
 # v6.0.1 - 2023/12/22
 - Set the minimum version of Terraform to v1.6.0 as that is the lowest version to support `data.lifecycle` block.
@@ -58,21 +61,21 @@
 # v5.2.0 - 2023/07/20
 
 - Fixed issue introduce in v5.1.0 regarding the use of `var.external_id`.
-- Introduces support for `var.profile` to allow you to supply your own AWS profile. Thank you [coopengo-glecomte](https://github.com/digitickets/terraform-aws-cli/issues/8).
+- Introduces support for `var.profile` to allow you to supply your own AWS profile. Thank you, [coopengo-glecomte](https://github.com/digitickets/terraform-aws-cli/issues/8).
 - Introduces support for `var.region` to allow you to supply your own AWS region.
 - Refactored tests due to changes within Terraform.
 
 # v5.1.0 - 2023/07/20
 
-- Introduce support for `var.external_id`. Thank you [Joshua Rosen](https://github.com/digitickets/terraform-aws-cli/pull/6).
+- Introduce support for `var.external_id`. Thank you, [Joshua Rosen](https://github.com/digitickets/terraform-aws-cli/pull/6).
 
 # v5.0.4 - 2022/11/28
 
-- Allow `var.role_session_name` to be optional. Thank you [Byron Kim](https://github.com/digitickets/terraform-aws-cli/issues/4).
+- Allow `var.role_session_name` to be optional. Thank you, [Byron Kim](https://github.com/digitickets/terraform-aws-cli/issues/4).
 
 # v5.0.3 - 2022/05/31
 
-- Fix for when the AWS call being made has no output (which is invalid JSON). Thank you [Yaron Yarimi and Pavel Kargin](https://github.com/digitickets/terraform-aws-cli/issues/3).
+- Fix for when the AWS call being made has no output (which is invalid JSON). Thank you, [Yaron Yarimi and Pavel Kargin](https://github.com/digitickets/terraform-aws-cli/issues/3).
 
 # v5.0.2 - 2022/05/26
 
@@ -80,7 +83,7 @@
 
 # v5.0.1 - 2022/05/24
 
-- Explicitly specify output type as json for assume role call. Thank you [Niranjan Rajendran](https://github.com/digitickets/terraform-aws-cli/pull/2).
+- Explicitly specify output type as json for assume role call. Thank you, [Niranjan Rajendran](https://github.com/digitickets/terraform-aws-cli/pull/2).
 
 # v5.0.0 - 2022/01/27
 
