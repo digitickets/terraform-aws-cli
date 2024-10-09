@@ -8,7 +8,7 @@ tflint {
   required_version = ">= 0.53"
 }
 
-// Only the AWS plugin is enabled. The Google and Azure plugins are not enabled as we have no current use for them.
+# Only the AWS plugin is enabled. The Google and Azure plugins are not enabled as we have no current use for them.
 plugin "aws" {
   enabled    = true
   source     = "github.com/terraform-linters/tflint-ruleset-aws"
