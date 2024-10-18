@@ -12,13 +12,13 @@ tflint {
 plugin "aws" {
   enabled    = true
   source     = "github.com/terraform-linters/tflint-ruleset-aws"
-  version    = "0.33.0"
+  version    = "0.34.0"
   deep_check = true
 }
 
 #
 # Please check https://github.com/terraform-linters/tflint-ruleset-terraform/tree/v0.5.0/docs/rules for new rules
-# (adjust the version accordinginly)
+# (adjust the version accordingly)
 #
 
 # Use '#' for comments rather than '//'.
