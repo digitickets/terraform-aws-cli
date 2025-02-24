@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.96.1
+    rev: v1.97.3
     hooks:
       - id: terraform_tflint
       - id: terraform_fmt
@@ -18,7 +18,7 @@ repos:
           - --hook-config=--create-file-if-not-exist=true
           - --hook-config=--use-standard-markers=true
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: check-added-large-files
       - id: check-executables-have-shebangs
