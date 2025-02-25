@@ -2,7 +2,7 @@
   {
     "variable": "data.local_file.awscli_results_file",
     "problems": [
-      "An error occurred (NoSuchBucket) when calling the ListObjects operation: The specified bucket does not exist"
+      "An error occurred (AccessDenied) when calling the ListObjects operation: Access Denied"
     ]
   }
 ]
