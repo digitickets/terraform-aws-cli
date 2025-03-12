@@ -5,14 +5,14 @@ config {
 }
 
 tflint {
-  required_version = ">= 0.53"
+  required_version = ">= 0.55.1"
 }
 
 # Only the AWS plugin is enabled. The Google and Azure plugins are not enabled as we have no current use for them.
 plugin "aws" {
   enabled    = true
   source     = "github.com/terraform-linters/tflint-ruleset-aws"
-  version    = "0.34.0"
+  version    = "0.37.0"
   deep_check = true
 }
 
