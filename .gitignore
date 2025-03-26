@@ -3,5 +3,7 @@
 /PersonalSettingsMakefile
 /.env
 vendor/
+
 .terraform/
 /temp/
+aliased-providers.tf.json
