@@ -1,4 +1,16 @@
 repos:
+
+  - repo: local
+    hooks:
+      - id: tflint-setup
+        name: Setup before TFLint
+        entry: ./scripts/tflint-support.sh
+        args:
+          - setup
+        language: system
+        pass_filenames: false
+        always_run: true
+
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.97.3
     hooks:
@@ -16,7 +28,18 @@ repos:
           - --hook-config=--path-to-file=README.md
           - --hook-config=--add-to-existing-file=true
           - --hook-config=--create-file-if-not-exist=true
-          - --hook-config=--use-standard-markers=true
+
+  - repo: local
+    hooks:
+      - id: tflint-teardown
+        name: Teardown after TFLint
+        entry: ./scripts/tflint-support.sh
+        args:
+          - teardown
+        language: system
+        pass_filenames: false
+        always_run: true
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
