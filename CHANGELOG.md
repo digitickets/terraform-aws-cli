@@ -1,8 +1,9 @@
 # Changelog
 
 # Unreleased
-- Add v1.9.4, through to 1.9.8 to the list of versions to run the tests against.
+- Add v1.11.3, and reduced the number of builds to just the latest in the minor versions of Terraform from 1.6.0 onwards.
 - Minor reorganization to match [Terraform Standard Module Structure](https://www.terraform.io/docs/modules/index.html#standard-module-structure).
+- Small enhancement for TFLint when aliased providers are used.
 
 # v7.0.0 - 2024/08/06
 - Fix a typo in the description for the `var.external_id`.
