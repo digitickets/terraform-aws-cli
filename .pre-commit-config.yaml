@@ -3,19 +3,22 @@ repos:
   - repo: local
     hooks:
       - id: tflint-setup
-        name: Setup before TFLint
-        entry: ./scripts/tflint-support.sh
+        always_run: true
         args:
           - setup
+        entry: ./scripts/tflint-support.sh
         language: system
+        name: Setup before TFLint
         pass_filenames: false
-        always_run: true
+        stages: [pre-commit]
 
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.97.3
     hooks:
       - id: terraform_tflint
+        stages: [pre-commit]
       - id: terraform_fmt
+        stages: [pre-commit]
       - id: terraform_validate
         exclude: |
           (?x)(
@@ -23,47 +26,70 @@ repos:
             ^modules/|
             ^validate/
           )
+        stages: [pre-commit]
       - id: terraform_docs
         args:
           - --hook-config=--path-to-file=README.md
           - --hook-config=--add-to-existing-file=true
           - --hook-config=--create-file-if-not-exist=true
+        stages: [pre-commit]
 
   - repo: local
     hooks:
       - id: tflint-teardown
-        name: Teardown after TFLint
-        entry: ./scripts/tflint-support.sh
+        always_run: true
         args:
           - teardown
+        entry: ./scripts/tflint-support.sh
+        name: Teardown after TFLint
         language: system
         pass_filenames: false
-        always_run: true
+        stages: [pre-commit]
+
+  - repo: local
+    hooks:
+      - id: check-changelog-updated
+        entry: ./scripts/terraform-module-support.sh
+        language: system
+        name: Check if CHANGELOG.md is updated before push
+        stages: [pre-push]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
       - id: check-added-large-files
+        stages: [pre-commit]
       - id: check-executables-have-shebangs
+        stages: [pre-commit]
       - id: check-json
+        stages: [pre-commit]
       - id: check-merge-conflict
+        stages: [pre-commit]
       - id: check-symlinks
+        stages: [pre-commit]
       - id: check-yaml
+        stages: [pre-commit]
       - id: detect-aws-credentials
         args:
           - --allow-missing-credentials
+        stages: [pre-commit]
       - id: detect-private-key
+        stages: [pre-commit]
       - id: end-of-file-fixer
+        stages: [pre-commit]
       - id: fix-byte-order-marker
+        stages: [pre-commit]
       - id: pretty-format-json
-        files: .*\.json$
         args:
           - --autofix
           - --indent=2
           - --no-sort-keys
+        files: .*\.json$
+        stages: [pre-commit]
       - id: trailing-whitespace
         args:
           - --markdown-linebreak-ext=md
+        stages: [pre-commit]
 
   - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
     rev: 0.2.3
@@ -76,8 +102,10 @@ repos:
           - --offset=2
           - --sequence=4
           - --width=300
+        stages: [pre-commit]
 
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.18.2
     hooks:
       - id: gitleaks
+        stages: [pre-commit]
