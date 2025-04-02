@@ -13,7 +13,7 @@ repos:
         stages: [pre-commit]
 
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.97.3
+    rev: v1.98.0
     hooks:
       - id: terraform_tflint
         stages: [pre-commit]
@@ -105,7 +105,7 @@ repos:
         stages: [pre-commit]
 
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.18.2
+    rev: v8.24.2
     hooks:
       - id: gitleaks
         stages: [pre-commit]
