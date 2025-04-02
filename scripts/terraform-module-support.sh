@@ -5,6 +5,11 @@ set -o pipefail
 # Get the branch being pushed
 current_branch=$(git rev-parse --abbrev-ref HEAD)
 
+# Exit early if the current branch is master
+if [ "$current_branch" = "master" ]; then
+    exit 0
+fi
+
 # Check if CHANGELOG.md is in the list of files supplied by the pre-commit application.
 if ! echo "$@" | grep -q "CHANGELOG.md"; then
     echo "Warning: You are pushing to '$current_branch' without modifying CHANGELOG.md."
