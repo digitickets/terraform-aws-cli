@@ -2,6 +2,9 @@ config {
   call_module_type = "all"
   force            = false
   format           = "compact"
+  ignore_module    = {
+    "Invicton-Labs/deepmerge/null" = true
+  }
 }
 
 tflint {
