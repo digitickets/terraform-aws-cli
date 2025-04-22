@@ -49,7 +49,9 @@ repos:
   - repo: local
     hooks:
       - id: check-changelog-updated
+        always_run: true
         entry: ./scripts/terraform-module-support.sh
+        files: CHANGELOG.md
         language: system
         name: Check if CHANGELOG.md is updated before push
         stages: [pre-push]
