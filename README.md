@@ -91,6 +91,24 @@ module "current_desired_capacity" {
 
 Further information regarding the use of external IDs can be found [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html).
 
+# Warning
+
+This module uses Terraform's `external` provider to allow an `external` data source to be used to call the AWS CLI tool,
+and retrieve information not yet available via the AWS Terraform Provider.
+
+As per the warnings [here](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external),
+the `external` data source, and as a consequence, this module, it is expected that this module is used with caution.
+
+This module is _NOT_ a replacement for the AWS Terraform Provider.
+
+As per the last paragraph of the warnings from the official documentation regarding the `external` data source...
+
+  "Terraform expects a data source to have _no observable side-effects_,
+   and will re-run the program each time the state is refreshed."
+
+If you use this module to perform destructive changes to your AWS environment, then they will be triggered each time a
+Terraform plan and apply are run.
+
 # Terraform requirements, providers, resources, etc.
 
 <!-- BEGIN_TF_DOCS -->

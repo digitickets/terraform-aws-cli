@@ -1,9 +1,10 @@
 # Changelog
 
-# Unreleased
+# V7.0.1 - 2025/04/28
 - Add v1.11.3, and reduced the number of builds to just the latest in the minor versions of Terraform from 1.6.0 onwards.
 - Minor reorganization to match [Terraform Standard Module Structure](https://www.terraform.io/docs/modules/index.html#standard-module-structure).
 - Small enhancement for TFLint when aliased providers are used.
+- Added warning to README.md regarding destructive use. Thank you, [Yves Vogl](https://github.com/digitickets/terraform-aws-cli/issues/25).
 
 # v7.0.0 - 2024/08/06
 - Fix a typo in the description for the `var.external_id`.
