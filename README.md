@@ -124,8 +124,8 @@ Terraform plan and apply are run.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_external"></a> [external](#provider\_external) | 2.3.4 |
-| <a name="provider_local"></a> [local](#provider\_local) | 2.5.2 |
+| <a name="provider_external"></a> [external](#provider\_external) | 2.3.5 |
+| <a name="provider_local"></a> [local](#provider\_local) | 2.5.3 |
 
 ## Modules
 
