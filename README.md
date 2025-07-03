@@ -89,6 +89,24 @@ module "current_desired_capacity" {
 }
 ```
 
+## 5. Updating retries parameters.
+
+```hcl-terraform
+module "current_desired_capacity" {
+  source            = "digitickets/cli/aws"
+  assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
+  role_session_name = "GettingDesiredCapacityFor${var.environment}"
+  aws_cli_commands  = ["autoscaling", "describe-auto-scaling-groups"]
+  aws_cli_query     = "AutoScalingGroups[?Tags[?Key==`Name`]|[?Value==`digitickets-${var.environment}-asg-app`]]|[0].DesiredCapacity"
+  profile           = "your-own-profile"
+  external_id       = "your-external-id"
+  retries = {
+     max_attempts = 10
+     mode         = "standard"
+  }
+}
+```
+
 Further information regarding the use of external IDs can be found [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html).
 
 # Warning
