@@ -1,13 +1,15 @@
 locals {
   joined_aws_cli_command = join(" ", var.aws_cli_commands)
   external_program_query = {
-    assume_role_arn   = var.assume_role_arn
-    role_session_name = length(var.assume_role_arn) > 0 ? var.role_session_name : ""
-    aws_cli_commands  = local.joined_aws_cli_command
-    aws_cli_query     = var.aws_cli_query
-    external_id       = var.external_id
-    profile           = var.profile
-    region            = var.region
+    assume_role_arn      = var.assume_role_arn
+    role_session_name    = length(var.assume_role_arn) > 0 ? var.role_session_name : ""
+    aws_cli_commands     = local.joined_aws_cli_command
+    aws_cli_query        = var.aws_cli_query
+    external_id          = var.external_id
+    profile              = var.profile
+    region               = var.region
+    retries_max_attempts = var.retries.max_attempts
+    retries_mode         = var.retries.mode
   }
   standard_results_file    = format("%s/temp/%s/results.json", path.module, md5(join("-", values(local.external_program_query))))
   alternative_results_file = format("%s/results.json", var.alternative_path)

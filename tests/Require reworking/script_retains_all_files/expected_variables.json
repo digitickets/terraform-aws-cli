@@ -11,5 +11,9 @@
   "external_id": "",
   "profile": "",
   "region": "eu-west-1",
+  "retries": {
+    "max_attempts": 4,
+    "mode": "adaptive"
+  },
   "role_session_name": ""
 }

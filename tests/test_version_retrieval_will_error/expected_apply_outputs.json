@@ -1,5 +1,5 @@
 {
   "result": "",
-  "result_raw": "$AWS_CLI_VERSION\n",
+  "result_raw": "aws-cli/2.25.1 Python/3.12.9 Darwin/24.4.0 source/arm64\n",
   "result_was_decoded": false
 }

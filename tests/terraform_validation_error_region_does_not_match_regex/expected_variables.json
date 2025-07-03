@@ -8,5 +8,9 @@
   "external_id": "",
   "profile": "",
   "region": "US East (Ohio) us-east-2",
+  "retries": {
+    "max_attempts": 4,
+    "mode": "adaptive"
+  },
   "role_session_name": ""
 }

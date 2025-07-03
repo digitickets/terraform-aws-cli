@@ -48,14 +48,16 @@ rm -rf \
 jq -Mcr . >"${JQ_JSON}" 2>"${JQ_ERROR_LOG}"
 
 # Extract the query attributes
-AWS_CLI_COMMANDS=$( jq -r '.aws_cli_commands'  "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-AWS_CLI_QUERY=$(    jq -r '.aws_cli_query'     "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-ASSUME_ROLE_ARN=$(  jq -r '.assume_role_arn'   "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-ROLE_SESSION_NAME=$(jq -r '.role_session_name' "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-EXTERNAL_ID=$(      jq -r '.external_id'       "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-PROFILE_NAME=$(     jq -r '.profile'           "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-REGION_NAME=$(      jq -r '.region'            "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-KEEP_LOGS=$(        jq -r '.keep_logs'         "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+AWS_CLI_COMMANDS=$(    jq -r '.aws_cli_commands'     "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+AWS_CLI_QUERY=$(       jq -r '.aws_cli_query'        "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+ASSUME_ROLE_ARN=$(     jq -r '.assume_role_arn'      "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+ROLE_SESSION_NAME=$(   jq -r '.role_session_name'    "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+EXTERNAL_ID=$(         jq -r '.external_id'          "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+PROFILE_NAME=$(        jq -r '.profile'              "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+REGION_NAME=$(         jq -r '.region'               "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+KEEP_LOGS=$(           jq -r '.keep_logs'            "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+RETRIES_MAX_ATTEMPTS=$(jq -r '.retries_max_attempts' "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
+RETRIES_MODE=$(        jq -r '.retries_mode'         "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
 
 # Build the required parameters for the AWS calls.
 
@@ -112,8 +114,9 @@ fi
 # Disable any assigned pager
 export AWS_PAGER=""
 
-# Configure adaptive retry mode
-export AWS_RETRY_MODE=adaptive
+# Configure retries
+export AWS_RETRY_MODE="${RETRIES_MODE}"
+export AWS_MAX_ATTEMPTS="${RETRIES_MAX_ATTEMPTS}"
 
 # Run the AWS_CLI command
 AWS_COMMAND_LINE=""

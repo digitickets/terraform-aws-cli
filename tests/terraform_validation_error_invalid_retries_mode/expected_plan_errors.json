@@ -1,0 +1,8 @@
+[
+  {
+    "variable": "var.retries",
+    "problems": [
+      "The retries mode must be one of 'legacy', 'standard', or 'adaptive'."
+    ]
+  }
+]
