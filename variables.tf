@@ -137,7 +137,7 @@ variable "retries" {
   rate-limit variables that are dynamically updated with each retry attempt.
 
   More information about retry modes can be found in the AWS documentation:
-  https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-retries.html
+  https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-retries.html
 EOD
   type = object({
     max_attempts = optional(number, 4)
