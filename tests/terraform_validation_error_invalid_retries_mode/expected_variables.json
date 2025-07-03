@@ -1,16 +1,16 @@
 {
-  "alternative_path": "test-reports/terraform_validation_error_external_id_too_short/aws",
+  "alternative_path": "test-reports/terraform_validation_error_invalid_retries_mode/aws",
   "assume_role_arn": "",
   "aws_cli_commands": [
     "version"
   ],
   "aws_cli_query": "",
-  "external_id": "1",
+  "external_id": "",
   "profile": "",
   "region": "",
   "retries": {
-    "max_attempts": 4,
-    "mode": "adaptive"
+    "max_attempts": 3,
+    "mode": "invalid_mode"
   },
   "role_session_name": ""
 }

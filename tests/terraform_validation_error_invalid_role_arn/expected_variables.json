@@ -8,5 +8,9 @@
   "external_id": "",
   "profile": "",
   "region": "",
+  "retries": {
+    "max_attempts": 4,
+    "mode": "adaptive"
+  },
   "role_session_name": ""
 }

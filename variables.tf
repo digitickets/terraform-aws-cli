@@ -122,3 +122,31 @@ variable "alternative_path" {
   type        = string
   default     = ""
 }
+
+variable "retries" {
+  description = <<EOD
+  Configuration for retries when making AWS CLI calls.
+
+  The `max_attempts` specifies a value of maximum retry attempts the AWS CLI retry handler uses, where the initial call
+  counts toward the value that you provide.
+  The `mode` can be one of the following:
+    - `legacy`: Uses the legacy retry mode.
+    - `standard`: Uses the standard retry mode.
+    - `adaptive`: Experimental retry mode that includes all the features of standard mode. In addition to the standard
+  mode features, adaptive mode also introduces client-side rate limiting through the use of a token bucket and
+  rate-limit variables that are dynamically updated with each retry attempt.
+
+  More information about retry modes can be found in the AWS documentation:
+  https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-retries.html
+EOD
+  type = object({
+    max_attempts = optional(number, 4)
+    mode         = optional(string, "adaptive")
+  })
+  default = {}
+
+  validation {
+    condition     = contains(["legacy", "standard", "adaptive"], var.retries.mode)
+    error_message = "The retries mode must be one of 'legacy', 'standard', or 'adaptive'."
+  }
+}

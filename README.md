@@ -29,7 +29,7 @@ This module requires a couple of additional tools to operate successfully.
 If you are using a blue/green style deployment, you would want to create the same number of EC2 instances as you are
 replacing.
 
-```hcl-terraform
+```hcl
 module "current_desired_capacity" {
   source            = "digitickets/cli/aws"
   role_session_name = "GettingDesiredCapacityFor${var.environment}"
@@ -48,7 +48,7 @@ You can now set the desired capacity of an aws_autoscaling_group:
 
 Extending the first example above, assuming a role is as simple as adding an `assume_role_arn` to the module:
 
-```hcl-terraform
+```hcl
 module "current_desired_capacity" {
   source            = "digitickets/cli/aws"
   assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
@@ -62,7 +62,7 @@ module "current_desired_capacity" {
 
 Extending the example above, you can supply your own profile by adding a `profile` to the module:
 
-```hcl-terraform
+```hcl
 module "current_desired_capacity" {
    source            = "digitickets/cli/aws"
    assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
@@ -77,7 +77,7 @@ module "current_desired_capacity" {
 
 Extending the example above, you can supply your own external ID by adding an `external_id` to the module:
 
-```hcl-terraform
+```hcl
 module "current_desired_capacity" {
   source            = "digitickets/cli/aws"
   assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
@@ -86,6 +86,24 @@ module "current_desired_capacity" {
   aws_cli_query     = "AutoScalingGroups[?Tags[?Key==`Name`]|[?Value==`digitickets-${var.environment}-asg-app`]]|[0].DesiredCapacity"
   profile           = "your-own-profile"
   external_id       = "your-external-id"
+}
+```
+
+## 5. Updating retries parameters.
+
+```hcl
+module "current_desired_capacity" {
+  source            = "digitickets/cli/aws"
+  assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
+  role_session_name = "GettingDesiredCapacityFor${var.environment}"
+  aws_cli_commands  = ["autoscaling", "describe-auto-scaling-groups"]
+  aws_cli_query     = "AutoScalingGroups[?Tags[?Key==`Name`]|[?Value==`digitickets-${var.environment}-asg-app`]]|[0].DesiredCapacity"
+  profile           = "your-own-profile"
+  external_id       = "your-external-id"
+  retries = {
+     max_attempts = 10
+     mode         = "standard"
+  }
 }
 ```
 
@@ -149,6 +167,7 @@ No modules.
 | <a name="input_external_id"></a> [external\_id](#input\_external\_id) | External id for assuming the role (optional).<br/><br/>  The length of optional external\_id, when supplied, must be between 2 and 1224 characters.<br/>  The optional external\_id can only contain upper- and lower-case alphanumeric characters with no spaces. You can also include underscores or any of the following characters: `=,.@-`.<br/>  The optional external\_id match the regular expression `^[\w=,.@-]*$`. | `string` | `""` | no | The length of optional external\_id, when supplied, must be between 2 and 1224 characters.<br>The optional external\_id must match the regular expression '^[\w=,.@-]*$'. |
 | <a name="input_profile"></a> [profile](#input\_profile) | The specific AWS profile to use (must be configured appropriately and is optional).<br/><br/>  The optional profile must start with a letter and can only contain letters, numbers, hyphens, and underscores. | `string` | `""` | no | The optional profile must start with a letter and can only contain letters, numbers, hyphens, and underscores. |
 | <a name="input_region"></a> [region](#input\_region) | The specific AWS region to use.<br/><br/>  The region must start with two letters representing the geographical area, followed by one or more letters or digits representing the specific region within that area. | `string` | `""` | no | The optional region must start with two letters representing the geographical area, followed by one or more letters or digits representing the specific region within that area. |
+| <a name="input_retries"></a> [retries](#input\_retries) | Configuration for retries when making AWS CLI calls.<br/><br/>  The `max_attempts` specifies a value of maximum retry attempts the AWS CLI retry handler uses, where the initial call<br/>  counts toward the value that you provide.<br/>  The `mode` can be one of the following:<br/>    - `legacy`: Uses the legacy retry mode.<br/>    - `standard`: Uses the standard retry mode.<br/>    - `adaptive`: Experimental retry mode that includes all the features of standard mode. In addition to the standard<br/>  mode features, adaptive mode also introduces client-side rate limiting through the use of a token bucket and<br/>  rate-limit variables that are dynamically updated with each retry attempt.<br/><br/>  More information about retry modes can be found in the AWS documentation:<br/>  https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-retries.html | <pre>object({<br/>    max_attempts = optional(number, 4)<br/>    mode         = optional(string, "adaptive")<br/>  })</pre> | `{}` | no | The retries mode must be one of 'legacy', 'standard', or 'adaptive'. |
 | <a name="input_role_session_name"></a> [role\_session\_name](#input\_role\_session\_name) | The role session name that will be used when assuming a role (optional)<br/><br/>  The length of the optional role session name, when supplied, must be between 2 and 64 characters.<br/>  The optional role session name can only contain upper- and lower-case alphanumeric characters with no spaces. You can also include underscores or any of the following characters: `=,.@-`.<br/>  The optional role session name match the regular expression `^[\w=,.@-]*$`.<br/><br/>  If the assume\_role\_arn is supplied, but the role\_session\_name is left empty, an internal default of "AssumingRole" will be used. | `string` | `""` | no | The length of the optional role session name, when supplied, must be between 2 and 64 characters.<br>The role session name match the regular expression '^[\w=,.@-]*$'. |
 
 ## Outputs

@@ -8,5 +8,9 @@
   "external_id": "",
   "profile": "Spaces are not allowed",
   "region": "",
+  "retries": {
+    "max_attempts": 4,
+    "mode": "adaptive"
+  },
   "role_session_name": ""
 }
