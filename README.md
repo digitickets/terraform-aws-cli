@@ -29,7 +29,7 @@ This module requires a couple of additional tools to operate successfully.
 If you are using a blue/green style deployment, you would want to create the same number of EC2 instances as you are
 replacing.
 
-```hcl-terraform
+```hcl
 module "current_desired_capacity" {
   source            = "digitickets/cli/aws"
   role_session_name = "GettingDesiredCapacityFor${var.environment}"
@@ -48,7 +48,7 @@ You can now set the desired capacity of an aws_autoscaling_group:
 
 Extending the first example above, assuming a role is as simple as adding an `assume_role_arn` to the module:
 
-```hcl-terraform
+```hcl
 module "current_desired_capacity" {
   source            = "digitickets/cli/aws"
   assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
@@ -62,7 +62,7 @@ module "current_desired_capacity" {
 
 Extending the example above, you can supply your own profile by adding a `profile` to the module:
 
-```hcl-terraform
+```hcl
 module "current_desired_capacity" {
    source            = "digitickets/cli/aws"
    assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
@@ -77,7 +77,7 @@ module "current_desired_capacity" {
 
 Extending the example above, you can supply your own external ID by adding an `external_id` to the module:
 
-```hcl-terraform
+```hcl
 module "current_desired_capacity" {
   source            = "digitickets/cli/aws"
   assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
@@ -91,7 +91,7 @@ module "current_desired_capacity" {
 
 ## 5. Updating retries parameters.
 
-```hcl-terraform
+```hcl
 module "current_desired_capacity" {
   source            = "digitickets/cli/aws"
   assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
