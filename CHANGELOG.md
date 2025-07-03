@@ -1,9 +1,11 @@
 # Changelog
 
-# Unreleased
+# v7.1.0 - 2025/07/03
 - Added v1.12.2 for testing
+- Improved support for retrying, both in terms of the retry mode and the number of retries via the new `var.retries`
+  variable. Thank you [Roma Ryzhyi](https://github.com/digitickets/terraform-aws-cli/pull/28).
 
-# V7.0.1 - 2025/04/28
+# v7.0.1 - 2025/04/28
 - Add v1.11.3, and reduced the number of builds to just the latest in the minor versions of Terraform from 1.6.0 onwards.
 - Minor reorganization to match [Terraform Standard Module Structure](https://www.terraform.io/docs/modules/index.html#standard-module-structure).
 - Small enhancement for TFLint when aliased providers are used.
