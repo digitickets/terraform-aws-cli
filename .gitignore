@@ -7,3 +7,4 @@ vendor/
 .terraform/
 /temp/
 aliased-providers.tf.json
+.terraform.lock.hcl
