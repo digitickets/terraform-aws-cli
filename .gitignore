@@ -3,6 +3,7 @@
 /PersonalSettingsMakefile
 /.env
 vendor/
+.DS_Store
 
 .terraform/
 /temp/
