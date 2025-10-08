@@ -1,3 +1,8 @@
+#############################################################################################
+# In the event that you need to disable a rule within a file, please read about annotations :
+# https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/annotations.md
+#############################################################################################
+
 config {
   call_module_type = "all"
   force            = false
@@ -12,100 +17,154 @@ tflint {
 }
 
 # Only the AWS plugin is enabled. The Google and Azure plugins are not enabled as we have no current use for them.
+# https://github.com/terraform-linters/tflint-ruleset-aws/blob/master/docs/rules/README.md
 plugin "aws" {
   enabled    = true
   source     = "github.com/terraform-linters/tflint-ruleset-aws"
-  version    = "0.38.0"
+  version    = "0.43.0"
   deep_check = true
 }
 
 #
-# Please check https://github.com/terraform-linters/tflint-ruleset-terraform/tree/v0.5.0/docs/rules for new rules
-# (adjust the version accordingly)
+# Please check https://github.com/terraform-linters/tflint-ruleset-terraform/tree/main/docs/rules for new rules
 #
 
-# Use '#' for comments rather than '//'.
+# Disallow // comments in favor of #
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_comment_syntax.md
+# Checked for changes 2025-10-07
 rule "terraform_comment_syntax" {
   enabled = true
 }
 
-# List items should be accessed using square brackets
+# Disallow legacy dot index syntax
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_deprecated_index.md
+# Checked for changes 2025-10-07
 rule "terraform_deprecated_index" {
   enabled = true
 }
 
-# Interpolation-only expressions are deprecated in Terraform v0.12.14
+# Disallow deprecated (0.11-style) interpolation
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_deprecated_interpolation.md
+# Checked for changes 2025-10-07
 rule "terraform_deprecated_interpolation" {
   enabled = true
 }
 
-# Lookup with 2 arguments is deprecated
+# Disallow deprecated lookup() function with only 2 arguments.
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_deprecated_lookup.md
+# Checked for changes 2025-10-07
 rule "terraform_deprecated_lookup" {
   enabled = true
 }
 
-# Outputs require a description
+# Disallow output declarations without description
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_documented_outputs.md
+# Checked for changes 2025-10-07
 rule "terraform_documented_outputs" {
   enabled = true
 }
 
-# Variables require a description
+# Disallow variable declarations without description
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_documented_variables.md
+# Checked for changes 2025-10-07
 rule "terraform_documented_variables" {
   enabled = true
 }
 
-# Comparing a collection with an empty list is invalid. To detect an empty collection, check its length
+# Disallow comparisons with [] when checking if a collection is empty
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_empty_list_equality.md
+# Checked for changes 2025-10-07
 rule "terraform_empty_list_equality" {
   enabled = true
 }
 
-# Disallow specifying a git or mercurial repository as a module source without pinning to a version
-rule terraform_module_pinned_source {
+# Disallow duplicate keys in a map object
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_map_duplicate_keys.md
+# Checked for changes 2025-10-07
+rule "terraform_map_duplicate_keys" {
   enabled = true
 }
 
-# Ensure that all modules sourced from a Terraform Registry specify a version
+# Disallow specifying a git or mercurial repository as a module source without pinning to a version
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_module_pinned_source.md
+# Checked for changes 2025-10-07
+rule "terraform_module_pinned_source" {
+  enabled = true
+  style   = "semver"
+}
+
+# Require pinned Git-hosted Terraform modules to use shallow cloning
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_module_shallow_clone.md
+# Checked for changes 2025-10-07
+rule "terraform_module_shallow_clone" {
+  enabled = true
+}
+
+# Checks that Terraform modules sourced from a registry specify a version
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_module_version.md
+# Checked for changes 2025-10-07
 rule "terraform_module_version" {
   enabled = true
   exact   = false # default
 }
 
-# Enforces naming conventions
+# Enforces naming conventions for resources, data sources, etc
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_naming_convention.md
+# Checked for changes 2025-10-07
 rule "terraform_naming_convention" {
   enabled = true
   format  = "snake_case"
 }
 
-# Require that all providers specify a source and version constraint through required_providers
+# Require that all providers have version constraints through required_providers
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_required_providers.md
+# Checked for changes 2025-10-07
 rule "terraform_required_providers" {
   enabled = true
 
   # defaults
-  source = true
+  source  = true
   version = true
 }
 
-# Disallow terraform declarations without required_version
+# Disallow terraform declarations without require_version
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_required_version.md
+# Checked for changes 2025-10-07
 rule "terraform_required_version" {
   enabled = true
 }
 
-# Ensure that a module complies with the Terraform Standard Module Structure / https://www.terraform.io/docs/modules/index.html#standard-module-structure
+# Ensure that a module complies with the Terraform Standard Module Structure
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_standard_module_structure.md
+# Checked for changes 2025-10-07
 rule "terraform_standard_module_structure" {
   enabled = true
 }
 
 # Disallow variable declarations without type
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_typed_variables.md
+# Checked for changes 2025-10-07
 rule "terraform_typed_variables" {
   enabled = true
 }
 
 # Disallow variables, data sources, and locals that are declared but never used
-rule terraform_unused_declarations {
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_unused_declarations.md
+# Checked for changes 2025-10-07
+rule "terraform_unused_declarations" {
   enabled = true
 }
 
 # Check that all required_providers are used in the module
-rule terraform_unused_required_providers {
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_unused_required_providers.md
+# Checked for changes 2025-10-07
+rule "terraform_unused_required_providers" {
+  enabled = true
+}
+
+# terraform.workspace should not be used with a "remote" backend with remote execution in Terraform v1.0.x
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_workspace_remote.md
+# Checked for changes 2025-10-07
+rule "terraform_workspace_remote" {
   enabled = true
 }

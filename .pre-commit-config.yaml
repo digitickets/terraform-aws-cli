@@ -13,7 +13,7 @@ repos:
         stages: [pre-commit]
 
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.99.4
+    rev: v1.101.0
     hooks:
       - id: terraform_tflint
         stages: [pre-commit]
@@ -23,7 +23,6 @@ repos:
         exclude: |
           (?x)(
             ^.terraform/|
-            ^modules/|
             ^validate/
           )
         stages: [pre-commit]
@@ -57,7 +56,7 @@ repos:
         stages: [pre-push]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-added-large-files
         stages: [pre-commit]
@@ -107,7 +106,7 @@ repos:
         stages: [pre-commit]
 
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.27.2
+    rev: v8.28.0
     hooks:
       - id: gitleaks
         stages: [pre-commit]
