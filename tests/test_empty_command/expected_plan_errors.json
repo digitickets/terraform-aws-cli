@@ -1,8 +1,8 @@
 [
   {
-    "variable": "data.local_file.awscli_results_file",
+    "variable": "var.aws_cli_commands",
     "problems": [
-      "usage: aws [options] <command> <subcommand> [<subcommand> ...] [parameters]\nTo see help text, you can run:\n\n  aws help\n  aws <command> help\n  aws <command> <subcommand> help\n\naws: error: the following arguments are required: command"
+      "The `var.aws_cli_commands` cannot be empty."
     ]
   }
 ]

@@ -12,6 +12,11 @@ variable "aws_cli_commands" {
   2. `"--option='value with a space wrapped in single quotes'"`
 EOT
   type        = list(string)
+
+  validation {
+    condition     = length(trimspace(join("", var.aws_cli_commands))) > 0
+    error_message = "The `var.aws_cli_commands` cannot be empty."
+  }
 }
 
 variable "aws_cli_query" {

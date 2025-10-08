@@ -1,5 +1,11 @@
 # Changelog
 
+# v7.1.1 - 2025/10/08
+- Added validation to `var.aws_cli_command` to stop an empty command being asked for. Slight improvement as this means
+  the empty command is evaluated before it is passed to the AWS CLI.
+- Updated to v1.11.4 for testing.
+- Added v1.13.3 for testing.
+
 # v7.1.0 - 2025/07/03
 - Added v1.12.2 for testing
 - Improved support for retrying, both in terms of the retry mode and the number of retries via the new `var.retries`
