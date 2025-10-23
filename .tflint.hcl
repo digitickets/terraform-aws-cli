@@ -105,7 +105,7 @@ rule "terraform_module_shallow_clone" {
 # Checked for changes 2025-10-07
 rule "terraform_module_version" {
   enabled = true
-  exact   = false # default
+  exact   = true
 }
 
 # Enforces naming conventions for resources, data sources, etc
