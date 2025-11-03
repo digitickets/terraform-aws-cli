@@ -13,7 +13,7 @@ config {
 }
 
 tflint {
-  required_version = ">= 0.56.0"
+  required_version = "0.59.1"
 }
 
 # Only the AWS plugin is enabled. The Google and Azure plugins are not enabled as we have no current use for them.
