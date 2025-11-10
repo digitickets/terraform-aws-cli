@@ -71,4 +71,4 @@ while IFS= read -r dir; do
       teardown) teardown_module ;;
     esac
   )
-done < <(find ./modules -type f -name "versions.tf" -exec dirname {} \; | sort -u)
+done < <(find . -type f -name "versions.tf" -exec dirname {} \; | sort -u)

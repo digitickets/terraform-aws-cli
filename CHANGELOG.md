@@ -5,6 +5,7 @@
 - Enforced module version pinning.
 - Remove redundant shebang from `terraform-validation-support.sh` script.
 - Upgrade tflint to 0.59.1
+- Fix creation of provider alias JSON file
 
 ## v7.1.1 - 2025/10/08
 - Added validation to `var.aws_cli_command` to stop an empty command being asked for. Slight improvement as this means
