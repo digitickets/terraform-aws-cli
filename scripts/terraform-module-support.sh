@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -o pipefail
+set -euo pipefail
 
 # Get the branch being pushed
 current_branch=$(git rev-parse --abbrev-ref HEAD)
