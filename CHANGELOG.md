@@ -7,6 +7,7 @@
 - Upgrade tflint to 0.59.1
 - Fix creation of provider alias JSON file
 - Improve script error handling
+- Added v1.14.1 for testing.
 
 ## v7.1.1 - 2025/10/08
 - Added validation to `var.aws_cli_command` to stop an empty command being asked for. Slight improvement as this means
