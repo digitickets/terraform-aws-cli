@@ -1,13 +1,14 @@
 # CHANGELOG
 
-## UNRELEASED
+## 7.1.2 - 2026-01-16
 - Improve Terraform Validation processing.
 - Enforced module version pinning.
 - Remove redundant shebang from `terraform-validation-support.sh` script.
-- Upgrade tflint to 0.59.1
 - Fix creation of provider alias JSON file
 - Improve script error handling
 - Added v1.14.1 for testing.
+- Standardised versions of Terraform and Terraform Providers
+- Upgrade tflint to 0.60.0
 
 ## v7.1.1 - 2025/10/08
 - Added validation to `var.aws_cli_command` to stop an empty command being asked for. Slight improvement as this means

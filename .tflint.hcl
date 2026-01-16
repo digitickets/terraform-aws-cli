@@ -13,16 +13,22 @@ config {
 }
 
 tflint {
-  required_version = "0.59.1"
+  required_version = "0.60.0" # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
 }
 
-# Only the AWS plugin is enabled. The Google and Azure plugins are not enabled as we have no current use for them.
 # https://github.com/terraform-linters/tflint-ruleset-aws/blob/master/docs/rules/README.md
 plugin "aws" {
   enabled    = true
   source     = "github.com/terraform-linters/tflint-ruleset-aws"
-  version    = "0.43.0"
+  version    = "0.45.0" # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
   deep_check = true
+}
+
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/README.md
+plugin "terraform" {
+  enabled = true
+  version = "0.14.1" # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
+  source  = "github.com/terraform-linters/tflint-ruleset-terraform"
 }
 
 #
@@ -75,6 +81,13 @@ rule "terraform_documented_variables" {
 # https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_empty_list_equality.md
 # Checked for changes 2025-10-07
 rule "terraform_empty_list_equality" {
+  enabled = true
+}
+
+# Enforce the official Terraform JSON syntax that uses a root object with keys for each block type
+# https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/terraform_json_syntax.md
+# Checked for changes 2026-01-14
+rule "terraform_json_syntax" {
   enabled = true
 }
 
