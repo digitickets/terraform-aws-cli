@@ -1,0 +1,53 @@
+name: Validate Terraform Module Release
+
+on:
+  push:
+    tags:
+      - '*'   # Trigger on any tag push
+
+jobs:
+  validate-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history to see tags
+
+      - name: Set colour variables
+        run: |
+          export RED='\033[0;31m' GREEN='\033[0;32m' RESET='\033[0m'
+          echo "RED=$RED" >> $GITHUB_ENV
+          echo "GREEN=$GREEN" >> $GITHUB_ENV
+          echo "RESET=$RESET" >> $GITHUB_ENV
+
+      - name: Validate tag
+        env:
+          RED: ${{ env.RED }}
+          GREEN: ${{ env.GREEN }}
+          RESET: ${{ env.RESET }}
+        run: |
+          set -euo pipefail
+
+          TAG="${GITHUB_REF#refs/tags/}"
+          printf "Validating tag %s\n" "$TAG"
+
+          # SemVer check
+          if ! echo "$TAG" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            printf "%bERROR%b: Tag must be SemVer (X.Y.Z)\n" "$RED" "$RESET"
+            exit 1
+          fi
+
+          # Ensure all tags are present
+          git fetch --tags --force
+          COMMIT="$(git rev-parse HEAD)"
+
+          # One tag per commit
+          OTHER_TAGS="$(git tag --points-at "$COMMIT" | grep -v "^$TAG$" || true)"
+          if [ -n "$OTHER_TAGS" ]; then
+            printf "%bERROR%b: Commit already has version tag(s): %s\n" "$RED" "$RESET" "$OTHER_TAGS"
+            exit 1
+          fi
+
+          # All good
+          printf "%bOK%b: Release validation passed\n" "$GREEN" "$RESET"
