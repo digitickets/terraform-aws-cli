@@ -136,7 +136,7 @@ Terraform plan and apply are run.
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.14 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.6 |
 | <a name="requirement_external"></a> [external](#requirement\_external) | ~> 2 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | ~> 2 |
 

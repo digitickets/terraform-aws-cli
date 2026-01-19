@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 7.1.3 - 2026-01-19
+- Reinstate minimum Terraform version to be `~> 1.6`.
+- Updated to the latest version for testing of Terraform `1.14` to `1.14.3`.
+
 ## 7.1.2 - 2026-01-16
 - Improve Terraform Validation processing.
 - Enforced module version pinning.
@@ -9,6 +13,7 @@
 - Added v1.14.1 for testing.
 - Standardised versions of Terraform and Terraform Providers
 - Upgrade tflint to 0.60.0
+- Dropping the `v` from the versions.
 
 ## v7.1.1 - 2025/10/08
 - Added validation to `var.aws_cli_command` to stop an empty command being asked for. Slight improvement as this means
