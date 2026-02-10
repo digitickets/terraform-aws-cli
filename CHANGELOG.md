@@ -4,10 +4,9 @@
 - Normalised `CHANGELOG.md` headings to be `## tag - YYYY-MM-DD`.
 - Prevent duplicated tags via pipeline.
 - Automated merging of the latest major branch release to the master branch.
-
-## 7.1.3 - 2026-01-19
 - Reinstate minimum Terraform version to be `~> 1.6`.
-- Updated to the latest version for testing of Terraform `1.14` to `1.14.3`.
+- Updated to the latest version for testing of Terraform `1.14` to `1.14.4`.
+- Updated the versions used to testing for `1.13` and `1.14`.
 
 ## 7.1.2 - 2026-01-16
 - Improve Terraform Validation processing.
