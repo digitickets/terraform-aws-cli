@@ -7,6 +7,7 @@
 - Reinstate minimum Terraform version to be `~> 1.6`.
 - Updated to the latest version for testing of Terraform `1.14` to `1.14.4`.
 - Updated the versions used to testing for `1.13` and `1.14`.
+- Updated Terraform and TFLint versions.
 
 ## 7.1.2 - 2026-01-16
 - Improve Terraform Validation processing.

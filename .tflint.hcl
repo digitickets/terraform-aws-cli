@@ -13,7 +13,7 @@ config {
 }
 
 tflint {
-  required_version = "0.60.0" # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
+  required_version = "0.61.0" # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
 }
 
 # https://github.com/terraform-linters/tflint-ruleset-aws/blob/master/docs/rules/README.md
