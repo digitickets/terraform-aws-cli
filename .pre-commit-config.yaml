@@ -36,6 +36,15 @@ repos:
           - --hook-config=--create-file-if-not-exist=true
         stages: [pre-commit]
 
+  - repo: https://github.com/thlorenz/doctoc
+    rev: v2.2.0 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
+    hooks:
+      - id: doctoc
+        args:
+          - --github
+          - --title=# Table of contents
+        stages: [pre-commit]
+
   - repo: local
     hooks:
       - id: terraform-validation-teardown

@@ -3,6 +3,29 @@
 
 # terraform-aws-cli
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+# Table of contents
+
+- [Additional requirements](#additional-requirements)
+- [Examples](#examples)
+  - [1. Get the desired capacity of an autoscaling group.](#1-get-the-desired-capacity-of-an-autoscaling-group)
+  - [2. Assuming a role.](#2-assuming-a-role)
+  - [3. Adding your own profile.](#3-adding-your-own-profile)
+  - [4. Adding your external ID.](#4-adding-your-external-id)
+  - [5. Updating retries parameters.](#5-updating-retries-parameters)
+- [Warning](#warning)
+- [Terraform requirements, providers, resources, etc.](#terraform-requirements-providers-resources-etc)
+  - [Requirements](#requirements)
+  - [Providers](#providers)
+  - [Modules](#modules)
+  - [Resources](#resources)
+  - [Inputs](#inputs)
+  - [Outputs](#outputs)
+- [Docker](#docker)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 Run the AWS CLI, with the ability to run under an assumed role, to access resources and properties missing from the
 Terraform AWS Provider.
 
