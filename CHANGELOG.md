@@ -24,6 +24,7 @@
 - Updated the versions used to testing for `1.13` and `1.14`.
 - Updated Terraform and TFLint versions.
 - Added TOC to README
+- Moved doctoc to after terraform-docs
 
 ## 7.1.2 - 2026-01-16
 - Improve Terraform Validation processing.

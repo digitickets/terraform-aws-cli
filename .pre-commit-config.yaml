@@ -36,15 +36,6 @@ repos:
           - --hook-config=--create-file-if-not-exist=true
         stages: [pre-commit]
 
-  - repo: https://github.com/thlorenz/doctoc
-    rev: v2.2.0 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
-    hooks:
-      - id: doctoc
-        args:
-          - --github
-          - --title=# Table of contents
-        stages: [pre-commit]
-
   - repo: local
     hooks:
       - id: terraform-validation-teardown
@@ -66,6 +57,20 @@ repos:
         language: system
         name: Check if CHANGELOG.md is updated before push
         stages: [pre-push]
+
+  - repo: https://github.com/thlorenz/doctoc
+    rev: v2.2.0 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
+    hooks:
+      - id: doctoc
+        args:
+          - --github
+          - --title=# Table of contents
+        exclude: |
+          (?x)(
+            ^README-Makefile.md$
+          )
+        name: Add TOC to Markdown files
+        stages: [pre-commit]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
