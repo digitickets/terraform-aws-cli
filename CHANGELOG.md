@@ -3,6 +3,7 @@
 # Table of contents
 
 - [CHANGELOG](#changelog)
+  - [7.1.4 - 2026-02-20](#714---2026-02-20)
   - [7.1.3 - 2026-02-20](#713---2026-02-20)
   - [7.1.2 - 2026-01-16](#712---2026-01-16)
   - [7.1.1 - 2025-10-08](#711---2025-10-08)
@@ -14,6 +15,9 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # CHANGELOG
+
+## 7.1.4 - 2026-02-20
+- Force push master in BitBucket pipeline
 
 ## 7.1.3 - 2026-02-20
 - Normalised `CHANGELOG.md` headings to be `## tag - YYYY-MM-DD`.
