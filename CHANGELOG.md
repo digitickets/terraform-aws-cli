@@ -3,7 +3,7 @@
 # Table of contents
 
 - [CHANGELOG](#changelog)
-  - [UNRELEASED](#unreleased)
+  - [7.1.3 - 2026-02-20](#713---2026-02-20)
   - [7.1.2 - 2026-01-16](#712---2026-01-16)
   - [7.1.1 - 2025-10-08](#711---2025-10-08)
   - [7.1.0 - 2025-07-03](#710---2025-07-03)
@@ -15,7 +15,7 @@
 
 # CHANGELOG
 
-## UNRELEASED
+## 7.1.3 - 2026-02-20
 - Normalised `CHANGELOG.md` headings to be `## tag - YYYY-MM-DD`.
 - Prevent duplicated tags via pipeline.
 - Automated merging of the latest major branch release to the master branch.
