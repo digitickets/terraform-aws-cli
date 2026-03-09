@@ -14,6 +14,7 @@
   - [3. Adding your own profile.](#3-adding-your-own-profile)
   - [4. Adding your external ID.](#4-adding-your-external-id)
   - [5. Updating retries parameters.](#5-updating-retries-parameters)
+  - [6. Suppress error handling to allow you to handle errors in a more meaningful manner.](#6-suppress-error-handling-to-allow-you-to-handle-errors-in-a-more-meaningful-manner)
 - [Warning](#warning)
 - [Terraform requirements, providers, resources, etc.](#terraform-requirements-providers-resources-etc)
   - [Requirements](#requirements)
@@ -134,6 +135,15 @@ module "current_desired_capacity" {
 
 Further information regarding retries can be found at [here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-retries.html).
 
+## 6. Suppress error handling to allow you to handle errors in a more meaningful manner.
+
+One of the issue with Terraform is that it expects things to exist, and if not, create them. The issue is that you
+cannot easily determine if something exists.
+
+Calling this module with `var.suppress_error_handling` set to `true` will allow you to receive the error in
+`output.result.error`. This can then be used in any manner you want without Terraform stopping when it would normally
+stop due to a `data` request against a non-existent target.
+
 # Warning
 
 This module uses Terraform's `external` provider to allow an `external` data source to be used to call the AWS CLI tool,
@@ -159,7 +169,7 @@ Terraform plan and apply are run.
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.14 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.6 |
 | <a name="requirement_external"></a> [external](#requirement\_external) | ~> 2 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | ~> 2 |
 
@@ -194,6 +204,7 @@ No modules.
 | <a name="input_region"></a> [region](#input\_region) | The specific AWS region to use.<br/><br/>  The region must start with two letters representing the geographical area, followed by one or more letters or digits representing the specific region within that area. | `string` | `""` | no | The optional region must start with two letters representing the geographical area, followed by one or more letters or digits representing the specific region within that area. |
 | <a name="input_retries"></a> [retries](#input\_retries) | Configuration for retries when making AWS CLI calls.<br/><br/>  The `max_attempts` specifies a value of maximum retry attempts the AWS CLI retry handler uses, where the initial call<br/>  counts toward the value that you provide.<br/>  The `mode` can be one of the following:<br/>    - `legacy`: Uses the legacy retry mode.<br/>    - `standard`: Uses the standard retry mode.<br/>    - `adaptive`: Experimental retry mode that includes all the features of standard mode. In addition to the standard<br/>  mode features, adaptive mode also introduces client-side rate limiting through the use of a token bucket and<br/>  rate-limit variables that are dynamically updated with each retry attempt.<br/><br/>  More information about retry modes can be found in the AWS documentation:<br/>  https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-retries.html | <pre>object({<br/>    max_attempts = optional(number, 4)<br/>    mode         = optional(string, "adaptive")<br/>  })</pre> | `{}` | no | The retries mode must be one of 'legacy', 'standard', or 'adaptive'. |
 | <a name="input_role_session_name"></a> [role\_session\_name](#input\_role\_session\_name) | The role session name that will be used when assuming a role (optional)<br/><br/>  The length of the optional role session name, when supplied, must be between 2 and 64 characters.<br/>  The optional role session name can only contain upper- and lower-case alphanumeric characters with no spaces. You can also include underscores or any of the following characters: `=,.@-`.<br/>  The optional role session name match the regular expression `^[\w=,.@-]*$`.<br/><br/>  If the assume\_role\_arn is supplied, but the role\_session\_name is left empty, an internal default of "AssumingRole" will be used. | `string` | `""` | no | The length of the optional role session name, when supplied, must be between 2 and 64 characters.<br>The role session name match the regular expression '^[\w=,.@-]*$'. |
+| <a name="input_suppress_error_handling"></a> [suppress\_error\_handling](#input\_suppress\_error\_handling) | Suppress errors, allowing the caller to access and handle the error appropriately | `bool` | `false` | no | None |
 
 ## Outputs
 

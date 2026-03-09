@@ -155,3 +155,9 @@ EOD
     error_message = "The retries mode must be one of 'legacy', 'standard', or 'adaptive'."
   }
 }
+
+variable "suppress_error_handling" {
+  description = "Suppress errors, allowing the caller to access and handle the error appropriately"
+  type        = bool
+  default     = false
+}

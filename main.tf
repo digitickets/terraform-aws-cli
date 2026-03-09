@@ -34,7 +34,7 @@ data "local_file" "awscli_results_file" {
 
   lifecycle {
     postcondition {
-      condition     = try(jsondecode(self.content).error, false) == false
+      condition     = var.suppress_error_handling ? true : (try(jsondecode(self.content).error, false) == false)
       error_message = try(jsondecode(self.content).error, "Unknown error")
     }
   }

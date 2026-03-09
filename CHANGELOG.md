@@ -19,6 +19,7 @@
 
 ## UNRELEASED
 - Update to latest provider versions for testing and split versions in Changelog
+- Added `var.suppress_error_handling` to allow errors to be bubble up to the caller.
 
 ## 7.1.4 - 2026-02-20
 - Force push master in BitBucket pipeline
