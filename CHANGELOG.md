@@ -3,7 +3,7 @@
 # Table of contents
 
 - [CHANGELOG](#changelog)
-  - [UNRELEASED](#unreleased)
+  - [7.2.1 - 2026-03-09](#721---2026-03-09)
   - [7.2.0 - 2026-03-09](#720---2026-03-09)
   - [7.1.4 - 2026-02-20](#714---2026-02-20)
   - [7.1.3 - 2026-02-20](#713---2026-02-20)
@@ -18,7 +18,7 @@
 
 # CHANGELOG
 
-## UNRELEASED
+## 7.2.1 - 2026-03-09
 - Handle error suppression setting in tests
 
 ## 7.2.0 - 2026-03-09
