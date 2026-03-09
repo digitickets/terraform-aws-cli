@@ -12,5 +12,6 @@
     "max_attempts": 4,
     "mode": "adaptive"
   },
-  "role_session_name": "1"
+  "role_session_name": "1",
+  "suppress_error_handling": false
 }

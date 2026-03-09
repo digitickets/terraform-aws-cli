@@ -1,5 +1,5 @@
 {
-  "alternative_path": "test-reports/test_data_retrieval_with_no_role_arn_and_error/aws",
+  "alternative_path": "test-reports/aws_error_suppressed_profile_does_not_exist/aws",
   "assume_role_arn": "",
   "aws_cli_commands": [
     "s3api",
@@ -9,12 +9,12 @@
   ],
   "aws_cli_query": "max_by(Contents, &Size)",
   "external_id": "",
-  "profile": "",
-  "region": "eu-west-1",
+  "profile": "non-existent-profile",
+  "region": "",
   "retries": {
     "max_attempts": 4,
     "mode": "adaptive"
   },
   "role_session_name": "",
-  "suppress_error_handling": false
+  "suppress_error_handling": true
 }
