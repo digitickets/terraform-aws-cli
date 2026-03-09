@@ -3,7 +3,7 @@
 # Table of contents
 
 - [CHANGELOG](#changelog)
-  - [UNRELEASED](#unreleased)
+  - [7.2.0 - 2026-03-09](#720---2026-03-09)
   - [7.1.4 - 2026-02-20](#714---2026-02-20)
   - [7.1.3 - 2026-02-20](#713---2026-02-20)
   - [7.1.2 - 2026-01-16](#712---2026-01-16)
@@ -17,7 +17,7 @@
 
 # CHANGELOG
 
-## UNRELEASED
+## 7.2.0 - 2026-03-09
 - Update to latest provider versions for testing and split versions in Changelog
 - Added `var.suppress_error_handling` to allow errors to be bubble up to the caller.
 
