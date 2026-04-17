@@ -20,7 +20,7 @@ tflint {
 plugin "aws" {
   enabled    = true
   source     = "github.com/terraform-linters/tflint-ruleset-aws"
-  version    = "0.45.0" # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
+  version    = "0.47.0" # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
   deep_check = true
 }
 

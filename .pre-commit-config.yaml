@@ -59,7 +59,7 @@ repos:
         stages: [pre-push]
 
   - repo: https://github.com/thlorenz/doctoc
-    rev: v2.3.0 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
+    rev: v2.4.1 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
     hooks:
       - id: doctoc
         args:
