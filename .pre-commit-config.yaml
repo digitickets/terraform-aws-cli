@@ -13,7 +13,7 @@ repos:
         stages: [pre-commit]
 
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.105.0 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
+    rev: v1.106.0 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
     hooks:
       - id: terraform_fmt
         stages: [pre-commit]

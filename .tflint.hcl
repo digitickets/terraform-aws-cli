@@ -13,7 +13,7 @@ config {
 }
 
 tflint {
-  required_version = "0.61.0" # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
+  required_version = "0.63.1" # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
 }
 
 # https://github.com/terraform-linters/tflint-ruleset-aws/blob/master/docs/rules/README.md
@@ -27,7 +27,7 @@ plugin "aws" {
 # https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/README.md
 plugin "terraform" {
   enabled = true
-  version = "0.14.1" # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
+  version = "0.15.0" # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
   source  = "github.com/terraform-linters/tflint-ruleset-terraform"
 }
 

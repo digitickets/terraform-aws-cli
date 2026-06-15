@@ -22,6 +22,7 @@
 ## UNRELEASED
 - Terraform provider version upgrades
 - From inf-base: Updated Pre-commit plugins
+- From inf-base: Update Terraform and Pre-commit.
 
 ## 7.2.1 - 2026-03-09
 - Handle error suppression setting in tests
