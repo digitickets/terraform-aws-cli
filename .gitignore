@@ -1,9 +1,11 @@
-/test-reports/
-.idea/
-/PersonalSettingsMakefile
-/.env
-vendor/
 .DS_Store
+.idea/
+.env
+.env.*.credentials
+PersonalSettingsMakefile
+pipeline-logs/
+test-reports/
+vendor/
 
 .terraform/
 /temp/

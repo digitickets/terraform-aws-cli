@@ -13,15 +13,20 @@ repos:
         stages: [pre-commit]
 
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.108.0 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
+    rev: v1.109.0 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
     hooks:
       - id: terraform_fmt
+        args:
+          - --hook-config=--tool-version=1.16.1 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
         stages: [pre-commit]
       - id: terraform_tflint
+        args:
+          - --hook-config=--tool-version=0.64.0 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
         stages: [pre-commit]
       - id: terraform_validate
         args:
           - --hook-config=--retry-once-with-cleanup=true
+          - --hook-config=--tool-version=1.16.1 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
         exclude: |
           (?x)(
             ^.terraform/|
