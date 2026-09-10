@@ -3,7 +3,7 @@
 # Table of contents
 
 - [CHANGELOG](#changelog)
-  - [UNRELEASED](#unreleased)
+  - [7.2.2 - 2026-09-10](#722---2026-09-10)
   - [7.2.1 - 2026-03-09](#721---2026-03-09)
   - [7.2.0 - 2026-03-09](#720---2026-03-09)
   - [7.1.4 - 2026-02-20](#714---2026-02-20)
@@ -19,7 +19,7 @@
 
 # CHANGELOG
 
-## UNRELEASED
+## 7.2.2 - 2026-09-10
 - From inf-base: Update Terraform, TFLint, and Pre-commit.
 - Added Terraform v1.16 to the test versions
 
