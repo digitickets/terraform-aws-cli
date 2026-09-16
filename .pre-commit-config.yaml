@@ -17,7 +17,7 @@ repos:
     hooks:
       - id: terraform_fmt
         args:
-          - --hook-config=--tool-version=1.16.1 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
+          - --hook-config=--tool-version=1.16.2 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
         stages: [pre-commit]
       - id: terraform_tflint
         args:
@@ -26,7 +26,7 @@ repos:
       - id: terraform_validate
         args:
           - --hook-config=--retry-once-with-cleanup=true
-          - --hook-config=--tool-version=1.16.1 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
+          - --hook-config=--tool-version=1.16.2 # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
         exclude: |
           (?x)(
             ^.terraform/|

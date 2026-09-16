@@ -22,7 +22,8 @@
 
 ## UNRELEASED
 - Updated to lastest GitHub Actions
-- From inf-base: Pre-commit, gitignore, and Terraform version update.
+- From inf-base: Updated Terraform, TFLint, Pre-commit versions.
+- From inf-base: Updated gitignore.
 
 ## 7.2.2 - 2026-09-10
 - From inf-base: Update Terraform, TFLint, and Pre-commit.
