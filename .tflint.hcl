@@ -27,7 +27,7 @@ plugin "aws" {
 # https://github.com/terraform-linters/tflint-ruleset-terraform/blob/main/docs/rules/README.md
 plugin "terraform" {
   enabled = true
-  version = "0.16.1" # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
+  version = "0.17.0" # INFBASE_MAINTAINED_VERSION - This version is maintained by inf-base.
   source  = "github.com/terraform-linters/tflint-ruleset-terraform"
 }
 

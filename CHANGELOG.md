@@ -25,6 +25,8 @@
 - From inf-base: Updated Terraform, TFLint, Pre-commit versions.
 - From inf-base: Updated gitignore.
 - Restore minimum supported version of Terraform to v1.6.
+- From inf-base: 2026-11-05 - Terraform, TFLint, and Pre-Commit updates
+- From inf-base: 2026-11-05 - Terraform, TFLint, and Pre-Commit updates
 
 ## 7.2.2 - 2026-09-10
 - From inf-base: Update Terraform, TFLint, and Pre-commit.
