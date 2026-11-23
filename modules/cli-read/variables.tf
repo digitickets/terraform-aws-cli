@@ -15,6 +15,11 @@ EOT
     condition     = length(trimspace(join("", var.aws_cli_commands))) > 0
     error_message = "The `var.aws_cli_commands` cannot be empty."
   }
+
+  validation {
+    condition     = alltrue([for arg in var.aws_cli_commands : !can(regex("^--profile(=|$)", arg))])
+    error_message = "The `var.aws_cli_commands` must not contain `--profile`, as it would override any assumed role. Use `var.profile` instead."
+  }
 }
 
 variable "aws_cli_query" {

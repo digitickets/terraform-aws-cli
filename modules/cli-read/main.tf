@@ -1,8 +1,14 @@
 locals {
   # Every value is passed to the script as one JSON document. Nothing is ever interpolated into a shell command line.
   script_input = {
-    assume_role_arn      = var.assume_role_arn
-    role_session_name    = length(var.assume_role_arn) > 0 ? var.role_session_name : ""
+    credentials = length(var.assume_role_arn) == 0 ? { mode = "ambient" } : {
+      mode         = "assume_role"
+      role_arn     = var.assume_role_arn
+      session_name = var.role_session_name
+      external_id  = var.external_id
+      profile      = var.profile
+      region       = var.region
+    }
     aws_cli_commands     = var.aws_cli_commands
     aws_cli_query        = var.aws_cli_query
     external_id          = var.external_id

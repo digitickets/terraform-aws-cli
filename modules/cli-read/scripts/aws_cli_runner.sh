@@ -9,6 +9,10 @@
 
 set -euo pipefail
 
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=../../../scripts/lib/aws_credentials.sh
+. "${SCRIPT_DIR}/../../../scripts/lib/aws_credentials.sh"
+
 fail() {
   printf 'cli-read: %s\n' "$1" >&2
   exit 1
@@ -43,13 +47,12 @@ AWS_CLI_COMMANDS=(${ARGV[@]+"${ARGV[@]}"})
 [ "${#AWS_CLI_COMMANDS[@]}" -gt 0 ] || fail 'aws_cli_commands cannot be empty'
 
 AWS_CLI_QUERY=$(input_string aws_cli_query)
-ASSUME_ROLE_ARN=$(input_string assume_role_arn)
-ROLE_SESSION_NAME=$(input_string role_session_name)
-EXTERNAL_ID=$(input_string external_id)
 PROFILE_NAME=$(input_string profile)
 REGION_NAME=$(input_string region)
 RETRIES_MAX_ATTEMPTS=$(input_string retries_max_attempts)
 RETRIES_MODE=$(input_string retries_mode)
+CREDENTIALS=$(printf '%s' "${INPUT}" | jq -c '.credentials // {"mode": "ambient"}')
+CREDENTIALS_MODE=$(printf '%s' "${CREDENTIALS}" | jq -r '.mode // "ambient"')
 
 WORK_DIR=$(mktemp -d "${TMPDIR:-/tmp}/terraform-aws-cli.XXXXXXXX")
 trap 'rm -rf "${WORK_DIR}"' EXIT
@@ -59,29 +62,14 @@ COMMON_OPTIONS=()
 if [ -n "${REGION_NAME}" ]; then
   COMMON_OPTIONS+=("--region" "${REGION_NAME}")
 fi
+
+# Acquire credentials. When a role is assumed, the temporary credentials are exported into this process only, and
+# `--profile` is never passed to the AWS CLI afterwards, as an explicit profile would override them
+# (see https://github.com/digitickets/terraform-aws-cli/issues/11). Without a role, the profile is used for the call.
+aws_credentials_acquire "${CREDENTIALS}" "${WORK_DIR}" || exit 1
 PROFILE_OPTIONS=()
-if [ -n "${PROFILE_NAME}" ]; then
+if [ "${CREDENTIALS_MODE}" = "ambient" ] && [ -n "${PROFILE_NAME}" ]; then
   PROFILE_OPTIONS+=("--profile" "${PROFILE_NAME}")
-fi
-
-# Do we need to assume a role?
-if [ -n "${ASSUME_ROLE_ARN}" ]; then
-  STS_ARGS=(sts assume-role --role-arn "${ASSUME_ROLE_ARN}" --role-session-name "${ROLE_SESSION_NAME:-AssumingRole}" --output json)
-  if [ -n "${EXTERNAL_ID}" ]; then
-    STS_ARGS+=("--external-id" "${EXTERNAL_ID}")
-  fi
-  if ! aws "${STS_ARGS[@]}" ${PROFILE_OPTIONS[@]+"${PROFILE_OPTIONS[@]}"} ${COMMON_OPTIONS[@]+"${COMMON_OPTIONS[@]}"} \
-    >"${WORK_DIR}/aws_sts.json" 2>"${WORK_DIR}/aws_sts_error.log"; then
-    fail 'The call to AWS to get temporary credentials failed'
-  fi
-  AWS_ACCESS_KEY_ID=$(jq -er '.Credentials.AccessKeyId' "${WORK_DIR}/aws_sts.json")
-  AWS_SECRET_ACCESS_KEY=$(jq -er '.Credentials.SecretAccessKey' "${WORK_DIR}/aws_sts.json")
-  AWS_SESSION_TOKEN=$(jq -er '.Credentials.SessionToken' "${WORK_DIR}/aws_sts.json")
-  export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
-
-  # Having assumed a role, drop the profile as it would override the assumed credentials.
-  # See https://github.com/digitickets/terraform-aws-cli/issues/11
-  PROFILE_OPTIONS=()
 fi
 
 # Do we have a query? Passed as a single argument, so JMESPath quotes need no escaping.
