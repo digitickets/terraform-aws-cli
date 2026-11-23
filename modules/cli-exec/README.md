@@ -14,6 +14,12 @@
 
 # cli-exec
 
+Mutating AWS CLI commands, run at apply time only (never during plan or refresh), through a `terraform_data` resource
+with a `local-exec` provisioner. The commands rerun only when their inputs, `triggers`, or this module's scripts change.
+
+See the [repository README](../../README.md#cli-exec-apply-only-commands) for usage, and for running plan and apply under
+different IAM identities.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 

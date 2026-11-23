@@ -14,6 +14,12 @@
 
 # cli-read
 
+Read-only AWS CLI queries, run at plan and apply time through Terraform's `external` data source. Only read-only
+operations are allowed, and operations that return secrets are blocked unless explicitly allowed.
+
+See the [repository README](../../README.md#cli-read-read-only-queries) for usage, what is stored in state, and the
+denylist.
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 

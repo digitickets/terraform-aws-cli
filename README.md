@@ -7,14 +7,22 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 # Table of contents
 
+- [Plan versus apply](#plan-versus-apply)
+  - [Use different IAM identities for plan and apply](#use-different-iam-identities-for-plan-and-apply)
 - [Additional requirements](#additional-requirements)
-- [Examples](#examples)
+- [cli-read: read-only queries](#cli-read-read-only-queries)
   - [1. Get the desired capacity of an autoscaling group.](#1-get-the-desired-capacity-of-an-autoscaling-group)
   - [2. Assuming a role.](#2-assuming-a-role)
   - [3. Adding your own profile.](#3-adding-your-own-profile)
   - [4. Adding your external ID.](#4-adding-your-external-id)
   - [5. Updating retries parameters.](#5-updating-retries-parameters)
   - [6. Suppress error handling to allow you to handle errors in a more meaningful manner.](#6-suppress-error-handling-to-allow-you-to-handle-errors-in-a-more-meaningful-manner)
+  - [Read-only operations only](#read-only-operations-only)
+  - [Operations that return secrets are blocked](#operations-that-return-secrets-are-blocked)
+  - [What is stored in state and shown in plan output](#what-is-stored-in-state-and-shown-in-plan-output)
+- [cli-exec: apply-only commands](#cli-exec-apply-only-commands)
+  - [Acting on each item of a list](#acting-on-each-item-of-a-list)
+- [Upgrading from 7.x](#upgrading-from-7x)
 - [Warning](#warning)
 - [Terraform requirements, providers, resources, etc.](#terraform-requirements-providers-resources-etc)
   - [Requirements](#requirements)
@@ -27,26 +35,62 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-Run the AWS CLI, with the ability to run under an assumed role, to access resources and properties missing from the
-Terraform AWS Provider.
+Run the AWS CLI, optionally under an assumed role, for resources and properties missing from the Terraform AWS
+Provider.
+
+This repository contains two modules, for two different kinds of use:
+
+| Module | Use it for | Runs during | Implemented with |
+| ------ | ---------- | ----------- | ---------------- |
+| [`modules/cli-read`](modules/cli-read) (also the root module) | Read-only queries whose results you use in your configuration | `plan`, `apply` and `refresh`, every time | `data "external"` |
+| [`modules/cli-exec`](modules/cli-exec) | Mutating commands | `apply` only, and only when its inputs change | `terraform_data` + `local-exec` |
+
+# Plan versus apply
+
+|  | cli-read | cli-exec |
+| - | -------- | -------- |
+| Runs during `terraform plan` | Yes | **No** |
+| Runs during `terraform apply` | Yes (unless the plan already read it) | Yes, on create, and when replaced |
+| Runs during `terraform refresh` | Yes | No |
+| Reruns | On every plan, apply and refresh | Only when `commands`, `for_each_item_commands`, `assume_role`, `region`, `show_output`, `ignore_error_codes`, `triggers`, or this module's scripts change |
+| Allowed operations | Read-only: `describe-*`, `list-*`, `get-*`, `batch-get-*`, minus a denylist of operations that return secrets | Any |
+| Results available to Terraform | Yes: `result`, `result_raw`, `result_was_decoded` | No. Output is discarded unless `show_output = true`, and then only shown in the apply log |
+| Stored in state | Inputs, and the full result | Inputs (in `triggers_replace`), never results |
+| Credentials needed | Read-only | Whatever the commands need |
+
+## Use different IAM identities for plan and apply
+
+Because cli-exec only runs during apply, and cli-read only reads, the two pipelines can (and should) run as different
+IAM identities:
+
+- **Plan**: an identity, or a role in `assume_role_arn`, with **read-only** permissions. A plan is often run for
+  unreviewed changes (for example, on every pull request). Even if someone changes a cli-read query, it cannot change
+  anything, and the operations on the denylist cannot reveal secrets.
+- **Apply**: an identity, or a role in cli-exec's `assume_role`, with the write permissions the commands need, that only
+  the reviewed apply pipeline can use.
 
 # Additional requirements
 
-This module requires a couple of additional tools to operate successfully.
+This module requires a few additional tools on the machine running Terraform.
 
-1. Amazon Web Service Command Line Interface (`aws`)
+1. Amazon Web Service Command Line Interface (`aws`) version 2
    : This is available in several forms [here](https://aws.amazon.com/cli/).
-   As the awscli tool gets updated regularly, any version 2 should be usable, but please try to keep as uptodate as the
-   functionality included in later versions may be what you need when using this module. If you are not getting the
-   functionality you require, please read the
-   [AWS CLI V2 Changelog](https://raw.githubusercontent.com/aws/aws-cli/v2/CHANGELOG.rst) to see if you are just needing
-   to upgrade.
+   As the awscli tool gets updated regularly, please keep it up to date. If you are not getting the functionality you
+   require, please read the [AWS CLI V2 Changelog](https://raw.githubusercontent.com/aws/aws-cli/v2/CHANGELOG.rst).
 
-2. JSON processor (`jq`)
-   : This is available [here](https://stedolan.github.io/jq/).
-   At least version `jq-1.5` is required but has been tested and actively used with `jq-1.6`.
+2. JSON processor (`jq`) version 1.6 or later
+   : This is available [here](https://jqlang.github.io/jq/).
 
-# Examples
+3. `bash` version 3.2 or later (the version that ships with macOS is fine).
+
+Reference the modules from the Terraform Registry (`digitickets/cli/aws` and `digitickets/cli/aws//modules/cli-exec`),
+from git, or by a relative path. Both modules use a shared script in this repository's `scripts/lib` directory, so
+copying a single module directory on its own, or referencing one by an absolute path, is not supported.
+
+# cli-read: read-only queries
+
+The root module is an alias of `modules/cli-read`, so existing configurations keep working. New configurations can use
+either `digitickets/cli/aws` or `digitickets/cli/aws//modules/cli-read`.
 
 ## 1. Get the desired capacity of an autoscaling group.
 
@@ -68,6 +112,13 @@ You can now set the desired capacity of an aws_autoscaling_group:
   desired_capacity = module.current_desired_capacity.result
 ```
 
+Each element of `aws_cli_commands` is passed to the AWS CLI as exactly one argument, and nothing is interpreted by a
+shell. Values containing spaces or quotes must **not** be wrapped in extra quotes:
+
+```hcl
+  aws_cli_commands = ["ec2", "describe-instances", "--filters", "Name=tag:Name,Values=web server"]
+```
+
 ## 2. Assuming a role.
 
 Extending the first example above, assuming a role is as simple as adding an `assume_role_arn` to the module:
@@ -75,12 +126,15 @@ Extending the first example above, assuming a role is as simple as adding an `as
 ```hcl
 module "current_desired_capacity" {
   source            = "digitickets/cli/aws"
-  assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
+  assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/ReadOnly"
   role_session_name = "GettingDesiredCapacityFor${var.environment}"
   aws_cli_commands  = ["autoscaling", "describe-auto-scaling-groups"]
   aws_cli_query     = "AutoScalingGroups[?Tags[?Key==`Name`]|[?Value==`digitickets-${var.environment}-asg-app`]]|[0].DesiredCapacity"
 }
 ```
+
+The temporary credentials are only held in memory by the script and the AWS CLI processes it starts. They are never
+written to disk, state, outputs or logs.
 
 ## 3. Adding your own profile.
 
@@ -89,13 +143,17 @@ Extending the example above, you can supply your own profile by adding a `profil
 ```hcl
 module "current_desired_capacity" {
    source            = "digitickets/cli/aws"
-   assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
+   assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/ReadOnly"
    role_session_name = "GettingDesiredCapacityFor${var.environment}"
    aws_cli_commands  = ["autoscaling", "describe-auto-scaling-groups"]
    aws_cli_query     = "AutoScalingGroups[?Tags[?Key==`Name`]|[?Value==`digitickets-${var.environment}-asg-app`]]|[0].DesiredCapacity"
    profile           = "your-own-profile"
 }
 ```
+
+When a role is assumed, the profile is only used to assume it. The query itself always runs as the assumed role: neither
+`profile` nor an inherited `AWS_PROFILE` can override the assumed credentials. `--profile` is not allowed in
+`aws_cli_commands`.
 
 ## 4. Adding your external ID.
 
@@ -104,7 +162,7 @@ Extending the example above, you can supply your own external ID by adding an `e
 ```hcl
 module "current_desired_capacity" {
   source            = "digitickets/cli/aws"
-  assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
+  assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/ReadOnly"
   role_session_name = "GettingDesiredCapacityFor${var.environment}"
   aws_cli_commands  = ["autoscaling", "describe-auto-scaling-groups"]
   aws_cli_query     = "AutoScalingGroups[?Tags[?Key==`Name`]|[?Value==`digitickets-${var.environment}-asg-app`]]|[0].DesiredCapacity"
@@ -120,7 +178,7 @@ Further information regarding the use of external IDs can be found [here](https:
 ```hcl
 module "current_desired_capacity" {
   source            = "digitickets/cli/aws"
-  assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/OrganizationAccountAccessRole"
+  assume_role_arn   = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/ReadOnly"
   role_session_name = "GettingDesiredCapacityFor${var.environment}"
   aws_cli_commands  = ["autoscaling", "describe-auto-scaling-groups"]
   aws_cli_query     = "AutoScalingGroups[?Tags[?Key==`Name`]|[?Value==`digitickets-${var.environment}-asg-app`]]|[0].DesiredCapacity"
@@ -144,23 +202,138 @@ Calling this module with `var.suppress_error_handling` set to `true` will allow 
 `output.result.error`. This can then be used in any manner you want without Terraform stopping when it would normally
 stop due to a `data` request against a non-existent target.
 
+## Read-only operations only
+
+cli-read runs during every plan, so it must never change anything. `aws_cli_commands` must start with a service and an
+operation beginning `describe-`, `list-`, `get-` or `batch-get-`. Anything else is rejected with a message pointing to
+cli-exec. `--debug` and `--endpoint-url` are also rejected.
+
+## Operations that return secrets are blocked
+
+Some read operations return secrets or credentials, which would be stored in Terraform state and shown in plan output.
+These are blocked by default (see [`modules/cli-read/denylist.tf`](modules/cli-read/denylist.tf)), and the error names
+the equivalent AWS provider block to use instead, where one exists. For example:
+
+```text
+`aws ssm get-parameter` is blocked in cli-read because it returns secret values, which would be stored in Terraform
+state and shown in plan output. Use `ephemeral "aws_ssm_parameter"` (Terraform >= 1.10, keeps the value out of state)
+or `data "aws_ssm_parameter"`. If you accept that risk, set
+`allow_denylisted_operations = { "ssm get-parameter" = true }`.
+```
+
+If you need a blocked operation and accept that its result will be in your state and plan output, allow it explicitly:
+
+```hcl
+module "parameter_history" {
+  source           = "digitickets/cli/aws//modules/cli-read"
+  aws_cli_commands = ["ssm", "get-parameter-history", "--name", "/app/feature-flag"]
+
+  allow_denylisted_operations = {
+    "ssm get-parameter-history" = true
+  }
+}
+```
+
+Only `true` allows an operation, so the value can be driven from another variable. A key that is not on the denylist is
+an error, so a typo cannot silently do nothing. You can block further operations with `additional_denied_operations`.
+
+## What is stored in state and shown in plan output
+
+- **State** holds every cli-read input (including `external_id`) and the complete AWS CLI result, in the `external`
+  data source and in the module's outputs.
+- **Plan output** shows the outputs of your root module, and any AWS CLI error message.
+- **On disk**, nothing is kept. The script works in a private (`umask 077`) temporary directory that is removed on every
+  exit path. `debug_log_dir` is opt-in and records arguments, exit codes and error messages only.
+
+So **do not use cli-read to read secrets**. Use the AWS provider's ephemeral resources instead, which keep values out of
+state.
+
+# cli-exec: apply-only commands
+
+```hcl
+module "log_retention" {
+  source = "digitickets/cli/aws//modules/cli-exec"
+
+  assume_role = {
+    arn          = "arn:aws:iam::123456789012:role/Deployer"
+    session_name = "SettingLogRetention" # optional
+    external_id  = "your-external-id"    # optional
+  }
+  region = "eu-west-2"
+
+  commands = [
+    ["logs", "create-log-group", "--log-group-name", "/app/example"],
+    ["logs", "put-retention-policy", "--log-group-name", "/app/example", "--retention-in-days", "30"],
+  ]
+
+  # Treat these AWS error codes as success, so that reruns are idempotent.
+  ignore_error_codes = ["ResourceAlreadyExistsException"]
+
+  # Change a value to rerun the commands on the next apply.
+  triggers = {
+    revision = "1"
+  }
+}
+```
+
+- Each element of `commands` is one AWS CLI invocation, without the leading `aws`, run in order. Each argument is passed
+  literally; nothing is interpreted by a shell.
+- With no `assume_role`, the ambient credentials of the process running Terraform are used.
+- The commands run when the module is first applied, and again only when one of its inputs, `triggers`, or this
+  module's scripts change. Upgrading this module to a version with a changed script therefore reruns the commands once,
+  so make them idempotent (`ignore_error_codes` helps).
+- The AWS CLI's output is discarded unless `show_output = true`. Errors are always shown, and any error not in
+  `ignore_error_codes` fails the apply.
+- Nothing runs on destroy.
+- The inputs are stored in state (in `triggers_replace`) and shown in the plan, so do not put secrets in them. Command
+  results are never stored.
+
+## Acting on each item of a list
+
+`for_each_item_commands` runs a read-only `list` command with `--query`, then runs `command` once per item, with every
+`{{item}}` in its arguments replaced by the item. The replacement is literal and never interpreted by a shell. These run
+after `commands`.
+
+```hcl
+  for_each_item_commands = [
+    {
+      list      = ["logs", "describe-log-groups", "--log-group-name-prefix", "/app/"]
+      query     = "logGroups[?retentionInDays == null].logGroupName"
+      command   = ["logs", "put-retention-policy", "--log-group-name", "{{item}}", "--retention-in-days", "30"]
+      max_items = 50 # optional, default 100; if more are returned, nothing runs and the apply fails
+    },
+  ]
+```
+
+The query must produce a JSON array of strings or numbers. The items are found at apply time, so they are not shown in
+the plan.
+
+If the items are known at plan time, you can instead read them with cli-read and build `commands` from the result, which
+shows every command in the plan.
+
+# Upgrading from 7.x
+
+Version 8 is a breaking release:
+
+1. Values in `aws_cli_commands` are no longer interpreted by a shell. Remove any quotes you added around values
+   containing spaces (`"'value'"` becomes `"value"`); they would now be passed to the AWS CLI literally.
+2. cli-read only accepts read-only operations. Move mutating commands to `modules/cli-exec`. Commands that are not
+   `<service> <operation>`, such as `["--version"]`, are rejected.
+3. Operations that return secrets are blocked unless allowed with `allow_denylisted_operations`.
+4. `--profile`, `--debug` and `--endpoint-url` are not allowed in `aws_cli_commands`. Use `profile` and `debug_log_dir`.
+5. `alternative_path` is ignored (no results file is written any more), and `MODULE_TERRAFORM_AWS_CLI_RETAIN_LOGS` has
+   no effect. Use `debug_log_dir`.
+6. The scripts now require `bash`.
+
 # Warning
 
-This module uses Terraform's `external` provider to allow an `external` data source to be used to call the AWS CLI tool,
-and retrieve information not yet available via the AWS Terraform Provider.
+cli-read uses Terraform's `external` data source. As per the warnings
+[here](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external), Terraform expects
+a data source to have _no observable side-effects_, and will re-run the program each time the state is refreshed. That
+is why cli-read only allows read-only operations, and why mutating commands belong in cli-exec.
 
-As per the warnings [here](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external),
-the `external` data source, and as a consequence, this module, it is expected that this module is used with caution.
-
-This module is _NOT_ a replacement for the AWS Terraform Provider.
-
-As per the last paragraph of the warnings from the official documentation regarding the `external` data source...
-
-  "Terraform expects a data source to have _no observable side-effects_,
-   and will re-run the program each time the state is refreshed."
-
-If you use this module to perform destructive changes to your AWS environment, then they will be triggered each time a
-Terraform plan and apply are run.
+These modules are _NOT_ a replacement for the AWS Terraform Provider. Prefer a provider resource or data source wherever
+one exists.
 
 # Terraform requirements, providers, resources, etc.
 
