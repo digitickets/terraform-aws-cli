@@ -5,6 +5,18 @@ variable "aws_cli_commands" {
   type        = list(string)
 }
 
+variable "additional_denied_operations" {
+  description = "Further operations to block, in addition to the built-in denylist. See `modules/cli-read`."
+  type        = map(string)
+  default     = {}
+}
+
+variable "allow_denylisted_operations" {
+  description = "Explicitly allow denylisted operations (`\"<service> <operation>\" = true`). See `modules/cli-read`."
+  type        = map(bool)
+  default     = {}
+}
+
 variable "aws_cli_query" {
   description = "The `--query` (JMESPath) value for the AWS CLI call. See `modules/cli-read`."
   type        = string

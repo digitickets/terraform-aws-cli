@@ -30,6 +30,17 @@ data "external" "awscli_program" {
   }
 
   lifecycle {
+    # Preconditions are checked before the data source is read, so a blocked command never reaches the AWS CLI.
+    precondition {
+      condition     = !local.operation_is_denied
+      error_message = format("`aws %s` is blocked in cli-read because %s If you accept that risk, set `allow_denylisted_operations = { \"%s\" = true }`.", local.operation, lookup(local.denied_operations, local.operation, ""), local.operation)
+    }
+
+    precondition {
+      condition     = length(local.unknown_allowed_operations) == 0
+      error_message = format("`var.allow_denylisted_operations` contains operations that are not on the denylist: %s. Remove them.", join(", ", local.unknown_allowed_operations))
+    }
+
     postcondition {
       condition     = var.suppress_error_handling ? true : (try(jsondecode(self.result.content).error, false) == false)
       error_message = try(jsondecode(self.result.content).error, "Unknown error")

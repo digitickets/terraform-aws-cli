@@ -8,6 +8,10 @@ variable "aws_cli_commands" {
   both of these forms work:
   1. `"--option", "value with spaces"`
   2. `"--option=value with spaces"`
+
+  The first element must be the service and the second a read-only operation (one starting with `describe-`, `list-`,
+  `get-`, or `batch-get-`). Operations known to return secrets or credentials are blocked by default; see
+  `var.allow_denylisted_operations`. To run mutating commands, use the apply-only `modules/cli-exec` module.
 EOT
   type        = list(string)
 
@@ -19,6 +23,55 @@ EOT
   validation {
     condition     = alltrue([for arg in var.aws_cli_commands : !can(regex("^--profile(=|$)", arg))])
     error_message = "The `var.aws_cli_commands` must not contain `--profile`, as it would override any assumed role. Use `var.profile` instead."
+  }
+
+  validation {
+    condition     = can(regex("^[a-z0-9][a-z0-9-]*$", try(var.aws_cli_commands[0], ""))) && can(regex("^(describe|list|get|batch-get)-[a-z0-9-]+$", try(var.aws_cli_commands[1], "")))
+    error_message = "The `var.aws_cli_commands` must start with a service and a read-only operation (one starting with `describe-`, `list-`, `get-`, or `batch-get-`), for example `[\"ec2\", \"describe-instances\"]`. cli-read runs at plan and apply time, so it must never change anything. To run a mutating command at apply time only, use the `modules/cli-exec` module."
+  }
+
+  validation {
+    condition     = alltrue([for arg in var.aws_cli_commands : !can(regex("^--(debug|endpoint-url)(=|$)", arg))])
+    error_message = "The `var.aws_cli_commands` must not contain `--debug` (it logs raw responses, including credentials) or `--endpoint-url` (it sends signed requests elsewhere). Use `var.debug_log_dir` for debugging."
+  }
+}
+
+variable "additional_denied_operations" {
+  description = <<EOD
+  Further operations to block, in addition to the built-in denylist (see `denylist.tf`).
+
+  Each key is `"<service> <operation>"` (for example `"dynamodb get-item"`). Each value explains why it is blocked and
+  what to use instead, and is shown in the error message.
+EOD
+  type        = map(string)
+  default     = {}
+
+  validation {
+    condition     = alltrue([for operation in keys(var.additional_denied_operations) : can(regex("^[a-z0-9][a-z0-9-]* [a-z0-9][a-z0-9-]*$", operation))])
+    error_message = "Each key of `var.additional_denied_operations` must be `\"<service> <operation>\"`, for example `\"dynamodb get-item\"`."
+  }
+}
+
+variable "allow_denylisted_operations" {
+  description = <<EOD
+  Explicitly allow operations that are on the denylist, accepting responsibility for their results being stored in
+  Terraform state and shown in plan output.
+
+  Each key is `"<service> <operation>"` and must be on the denylist. Only `true` allows an operation; `false` leaves it
+  blocked, so the value can be driven from another variable. For example:
+
+  ```hcl
+  allow_denylisted_operations = {
+    "ssm get-parameter-history" = true
+  }
+  ```
+EOD
+  type        = map(bool)
+  default     = {}
+
+  validation {
+    condition     = alltrue([for operation in keys(var.allow_denylisted_operations) : can(regex("^[a-z0-9][a-z0-9-]* [a-z0-9][a-z0-9-]*$", operation))])
+    error_message = "Each key of `var.allow_denylisted_operations` must be `\"<service> <operation>\"`, for example `\"ssm get-parameter-history\"`."
   }
 }
 

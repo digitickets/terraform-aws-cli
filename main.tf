@@ -7,15 +7,17 @@
 module "cli_read" {
   source = "./modules/cli-read"
 
-  alternative_path        = var.alternative_path
-  assume_role_arn         = var.assume_role_arn
-  aws_cli_commands        = var.aws_cli_commands
-  aws_cli_query           = var.aws_cli_query
-  debug_log_dir           = var.debug_log_dir
-  external_id             = var.external_id
-  profile                 = var.profile
-  region                  = var.region
-  retries                 = var.retries
-  role_session_name       = var.role_session_name
-  suppress_error_handling = var.suppress_error_handling
+  additional_denied_operations = var.additional_denied_operations
+  allow_denylisted_operations  = var.allow_denylisted_operations
+  alternative_path             = var.alternative_path
+  assume_role_arn              = var.assume_role_arn
+  aws_cli_commands             = var.aws_cli_commands
+  aws_cli_query                = var.aws_cli_query
+  debug_log_dir                = var.debug_log_dir
+  external_id                  = var.external_id
+  profile                      = var.profile
+  region                       = var.region
+  retries                      = var.retries
+  role_session_name            = var.role_session_name
+  suppress_error_handling      = var.suppress_error_handling
 }

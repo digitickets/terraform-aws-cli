@@ -189,6 +189,8 @@ No resources.
 
 | Name | Description | Type | Default | Required | Validation |
 | ---- | ----------- | ---- | ------- | :------: | ---------- |
+| <a name="input_additional_denied_operations"></a> [additional\_denied\_operations](#input\_additional\_denied\_operations) | Further operations to block, in addition to the built-in denylist. See `modules/cli-read`. | `map(string)` | `{}` | no | None |
+| <a name="input_allow_denylisted_operations"></a> [allow\_denylisted\_operations](#input\_allow\_denylisted\_operations) | Explicitly allow denylisted operations (`"<service> <operation>" = true`). See `modules/cli-read`. | `map(bool)` | `{}` | no | None |
 | <a name="input_alternative_path"></a> [alternative\_path](#input\_alternative\_path) | DEPRECATED and ignored. See `modules/cli-read`. | `string` | `""` | no | None |
 | <a name="input_assume_role_arn"></a> [assume\_role\_arn](#input\_assume\_role\_arn) | The ARN of the role being assumed (optional). See `modules/cli-read`. | `string` | `""` | no | None |
 | <a name="input_aws_cli_commands"></a> [aws\_cli\_commands](#input\_aws\_cli\_commands) | The AWS CLI service, operation, and options (without the leading `aws`). See `modules/cli-read`. | `list(string)` | n/a | yes | None |
