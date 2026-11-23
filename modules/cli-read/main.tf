@@ -16,6 +16,7 @@ locals {
     region               = var.region
     retries_max_attempts = tostring(var.retries.max_attempts)
     retries_mode         = var.retries.mode
+    debug_log_dir        = var.debug_log_dir
   }
 }
 
@@ -43,6 +44,6 @@ locals {
 check "alternative_path_is_deprecated" {
   assert {
     condition     = var.alternative_path == ""
-    error_message = "`var.alternative_path` is deprecated and ignored. No results file is written to disk any more."
+    error_message = "`var.alternative_path` is deprecated and ignored. No results file is written to disk any more. Use `var.debug_log_dir` for debugging."
   }
 }

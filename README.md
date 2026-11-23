@@ -189,10 +189,11 @@ No resources.
 
 | Name | Description | Type | Default | Required | Validation |
 | ---- | ----------- | ---- | ------- | :------: | ---------- |
-| <a name="input_alternative_path"></a> [alternative\_path](#input\_alternative\_path) | Use an alternative path for all files produced internally. See `modules/cli-read`. | `string` | `""` | no | None |
+| <a name="input_alternative_path"></a> [alternative\_path](#input\_alternative\_path) | DEPRECATED and ignored. See `modules/cli-read`. | `string` | `""` | no | None |
 | <a name="input_assume_role_arn"></a> [assume\_role\_arn](#input\_assume\_role\_arn) | The ARN of the role being assumed (optional). See `modules/cli-read`. | `string` | `""` | no | None |
 | <a name="input_aws_cli_commands"></a> [aws\_cli\_commands](#input\_aws\_cli\_commands) | The AWS CLI service, operation, and options (without the leading `aws`). See `modules/cli-read`. | `list(string)` | n/a | yes | None |
 | <a name="input_aws_cli_query"></a> [aws\_cli\_query](#input\_aws\_cli\_query) | The `--query` (JMESPath) value for the AWS CLI call. See `modules/cli-read`. | `string` | `""` | no | None |
+| <a name="input_debug_log_dir"></a> [debug\_log\_dir](#input\_debug\_log\_dir) | Opt-in debug logging directory (never logs credentials or results). See `modules/cli-read`. | `string` | `""` | no | None |
 | <a name="input_external_id"></a> [external\_id](#input\_external\_id) | External id for assuming the role (optional). See `modules/cli-read`. | `string` | `""` | no | None |
 | <a name="input_profile"></a> [profile](#input\_profile) | The specific AWS profile to use (optional). See `modules/cli-read`. | `string` | `""` | no | None |
 | <a name="input_region"></a> [region](#input\_region) | The specific AWS region to use (optional). See `modules/cli-read`. | `string` | `""` | no | None |

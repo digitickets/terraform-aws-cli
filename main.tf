@@ -11,6 +11,7 @@ module "cli_read" {
   assume_role_arn         = var.assume_role_arn
   aws_cli_commands        = var.aws_cli_commands
   aws_cli_query           = var.aws_cli_query
+  debug_log_dir           = var.debug_log_dir
   external_id             = var.external_id
   profile                 = var.profile
   region                  = var.region

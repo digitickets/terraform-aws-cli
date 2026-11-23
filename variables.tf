@@ -42,7 +42,13 @@ variable "role_session_name" {
 }
 
 variable "alternative_path" {
-  description = "Use an alternative path for all files produced internally. See `modules/cli-read`."
+  description = "DEPRECATED and ignored. See `modules/cli-read`."
+  type        = string
+  default     = ""
+}
+
+variable "debug_log_dir" {
+  description = "Opt-in debug logging directory (never logs credentials or results). See `modules/cli-read`."
   type        = string
   default     = ""
 }

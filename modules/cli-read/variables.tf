@@ -124,9 +124,20 @@ EOD
   }
 }
 
-# Variable for debugging
 variable "alternative_path" {
-  description = "Use an alternative path for all files produced internally"
+  description = "DEPRECATED and ignored. No results file is written to disk any more. Use `var.debug_log_dir` for debugging."
+  type        = string
+  default     = ""
+}
+
+variable "debug_log_dir" {
+  description = <<EOD
+  Opt-in debug logging. When set, the AWS CLI arguments, exit code, and error output of each call are appended to
+  `cli-read.log` in this directory (created with owner-only permissions).
+
+  Credentials, the STS response, the environment, and the command's result are never logged. The arguments are logged,
+  so do not enable this if your arguments are sensitive.
+EOD
   type        = string
   default     = ""
 }

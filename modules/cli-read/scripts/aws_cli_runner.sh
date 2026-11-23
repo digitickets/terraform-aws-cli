@@ -8,6 +8,10 @@
 # list and used as a single element of a bash array. This script must remain compatible with bash 3.2 (macOS).
 
 set -euo pipefail
+# Never trace: tracing would print the assumed credentials.
+set +x
+# Everything this script creates is private to the current user.
+umask 077
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 # shellcheck source=../../../scripts/lib/aws_credentials.sh
@@ -51,11 +55,26 @@ PROFILE_NAME=$(input_string profile)
 REGION_NAME=$(input_string region)
 RETRIES_MAX_ATTEMPTS=$(input_string retries_max_attempts)
 RETRIES_MODE=$(input_string retries_mode)
+DEBUG_LOG_DIR=$(input_string debug_log_dir)
 CREDENTIALS=$(printf '%s' "${INPUT}" | jq -c '.credentials // {"mode": "ambient"}')
 CREDENTIALS_MODE=$(printf '%s' "${CREDENTIALS}" | jq -r '.mode // "ambient"')
 
+# A private working directory for the AWS CLI's stdout/stderr, removed however the script exits.
 WORK_DIR=$(mktemp -d "${TMPDIR:-/tmp}/terraform-aws-cli.XXXXXXXX")
 trap 'rm -rf "${WORK_DIR}"' EXIT
+
+# Opt-in debug logging (var.debug_log_dir). Records the AWS CLI arguments, exit code, and error output only; never
+# credentials, the STS response, the environment, or the command's result.
+debug_log() {
+  if [ -z "${DEBUG_LOG_DIR}" ]; then
+    return 0
+  fi
+  mkdir -p "${DEBUG_LOG_DIR}"
+  local event="$1"
+  shift
+  jq -cn --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --arg event "${event}" \
+    '{timestamp: $ts, event: $event, data: $ARGS.positional}' --args -- "$@" >>"${DEBUG_LOG_DIR}/cli-read.log"
+}
 
 # Options shared by every AWS CLI call.
 COMMON_OPTIONS=()
@@ -84,14 +103,20 @@ export AWS_RETRY_MODE="${RETRIES_MODE}"
 export AWS_MAX_ATTEMPTS="${RETRIES_MAX_ATTEMPTS}"
 
 # Run the AWS CLI command. The output is returned in-band, so no results file is left behind.
-if aws "${AWS_CLI_COMMANDS[@]}" \
-  ${PROFILE_OPTIONS[@]+"${PROFILE_OPTIONS[@]}"} \
-  ${COMMON_OPTIONS[@]+"${COMMON_OPTIONS[@]}"} \
-  ${QUERY_OPTIONS[@]+"${QUERY_OPTIONS[@]}"} \
-  --output json \
-  >"${WORK_DIR}/aws_call.json" 2>"${WORK_DIR}/aws_call_error.log"; then
+AWS_CALL=(
+  "${AWS_CLI_COMMANDS[@]}"
+  ${PROFILE_OPTIONS[@]+"${PROFILE_OPTIONS[@]}"}
+  ${COMMON_OPTIONS[@]+"${COMMON_OPTIONS[@]}"}
+  ${QUERY_OPTIONS[@]+"${QUERY_OPTIONS[@]}"}
+  --output json
+)
+debug_log call "${AWS_CALL[@]}"
+if aws "${AWS_CALL[@]}" >"${WORK_DIR}/aws_call.json" 2>"${WORK_DIR}/aws_call_error.log"; then
+  debug_log success
   jq -Rsc '{content: .}' <"${WORK_DIR}/aws_call.json"
 else
+  EXIT_CODE=$?
+  debug_log failure "exit code ${EXIT_CODE}" "$(cat "${WORK_DIR}/aws_call_error.log")"
   # Convert the error into a JSON document, returned as the content.
   jq -Rsc '{content: ({error: gsub("^\n+|\n+$"; "")} | tojson)}' <"${WORK_DIR}/aws_call_error.log"
 fi
