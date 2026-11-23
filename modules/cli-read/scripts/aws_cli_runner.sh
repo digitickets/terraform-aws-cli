@@ -1,151 +1,109 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
+# Runs a single, read-only AWS CLI call on behalf of the cli-read module (via Terraform's `external` data source).
+#
+# Input (stdin) : {"input": "<JSON document built by modules/cli-read/main.tf>"}
+# Output (stdout): {"content": "<the AWS CLI stdout, or a JSON {\"error\": \"...\"} document>"}
+#
+# No value is ever passed through `eval` or re-parsed by a shell: every argument is read from JSON as a NUL-delimited
+# list and used as a single element of a bash array. This script must remain compatible with bash 3.2 (macOS).
 
-# Validate required commands
-if [ ! -x "$(command -v aws)" ]; then
-  echo '{"error":"aws cli is not installed"}'
+set -euo pipefail
+
+fail() {
+  printf 'cli-read: %s\n' "$1" >&2
   exit 1
-fi
-if [ ! -x "$(command -v jq)" ]; then
-  echo '{"error":"jq is not installed"}'
-  exit 2
-fi
+}
 
-# Validate required results file as the first argument
-if [ -z "${1}" ]; then
-  echo '{"error":"No results filename supplied"}'
-  exit 3
-fi
+command -v aws >/dev/null 2>&1 || fail 'aws cli is not installed'
+command -v jq >/dev/null 2>&1 || fail 'jq is not installed'
 
-# Extract directory from results file name for all logs.
-RESULTS_FILE="${1}"
-ROOT_DIRECTORY=$(dirname "${RESULTS_FILE}")
+QUERY_JSON=$(cat)
+INPUT=$(printf '%s' "${QUERY_JSON}" | jq -er '.input') || fail 'no input supplied'
+printf '%s' "${INPUT}" | jq -e 'type == "object"' >/dev/null || fail 'input is not a JSON object'
 
-# Build all the paths for all the files.
-## JQ json and error log
-JQ_JSON="${ROOT_DIRECTORY}/jq_data.json"
-JQ_ERROR_LOG="${ROOT_DIRECTORY}/jq_error.log"
+# Read a scalar string from the input document.
+input_string() {
+  printf '%s' "${INPUT}" | jq -r --arg key "$1" '.[$key] // "" | tostring'
+}
 
-## AWS STS json and error log
-AWS_STS_JSON="${ROOT_DIRECTORY}/aws_sts.json"
-AWS_STS_ERROR_LOG="${ROOT_DIRECTORY}/aws_sts_error.log"
+# Read a list of strings from the input document into the global ARGV array. Items are NUL-delimited so that any
+# character (spaces, quotes, newlines, `$()`) survives literally. NUL itself cannot appear in an argument, so reject it.
+read_argv() {
+  printf '%s' "${INPUT}" | jq -e --arg key "$1" \
+    '(.[$key] | type == "array") and all(.[$key][]; type == "string" and (contains("\u0000") | not))' >/dev/null ||
+    fail "$1 must be a list of strings without NUL characters"
+  ARGV=()
+  while IFS= read -r -d '' item; do
+    ARGV+=("${item}")
+  done < <(printf '%s' "${INPUT}" | jq -j --arg key "$1" '.[$key][] | (., "\u0000")')
+}
 
-## The actual AWS call json and error log
-AWS_CALL_JSON="${ROOT_DIRECTORY}/aws_call.json"
-AWS_CALL_ERROR_LOG="${ROOT_DIRECTORY}/aws_call_error.log"
+read_argv aws_cli_commands
+AWS_CLI_COMMANDS=(${ARGV[@]+"${ARGV[@]}"})
+[ "${#AWS_CLI_COMMANDS[@]}" -gt 0 ] || fail 'aws_cli_commands cannot be empty'
 
-# Remove any files that would match the above list
-mkdir -p "${ROOT_DIRECTORY}"
-rm -rf \
-  "${JQ_JSON}" \
-  "${JQ_ERROR_LOG}" \
-  "${AWS_STS_JSON}" \
-  "${AWS_STS_ERROR_LOG}" \
-  "${AWS_CALL_JSON}" \
-  "${AWS_CALL_ERROR_LOG}" \
-  "${RESULTS_FILE}" \
+AWS_CLI_QUERY=$(input_string aws_cli_query)
+ASSUME_ROLE_ARN=$(input_string assume_role_arn)
+ROLE_SESSION_NAME=$(input_string role_session_name)
+EXTERNAL_ID=$(input_string external_id)
+PROFILE_NAME=$(input_string profile)
+REGION_NAME=$(input_string region)
+RETRIES_MAX_ATTEMPTS=$(input_string retries_max_attempts)
+RETRIES_MODE=$(input_string retries_mode)
 
-# Get the query and store it
-jq -Mcr . >"${JQ_JSON}" 2>"${JQ_ERROR_LOG}"
+WORK_DIR=$(mktemp -d "${TMPDIR:-/tmp}/terraform-aws-cli.XXXXXXXX")
+trap 'rm -rf "${WORK_DIR}"' EXIT
 
-# Extract the query attributes
-AWS_CLI_COMMANDS=$(    jq -r '.aws_cli_commands'     "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-AWS_CLI_QUERY=$(       jq -r '.aws_cli_query'        "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-ASSUME_ROLE_ARN=$(     jq -r '.assume_role_arn'      "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-ROLE_SESSION_NAME=$(   jq -r '.role_session_name'    "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-EXTERNAL_ID=$(         jq -r '.external_id'          "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-PROFILE_NAME=$(        jq -r '.profile'              "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-REGION_NAME=$(         jq -r '.region'               "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-KEEP_LOGS=$(           jq -r '.keep_logs'            "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-RETRIES_MAX_ATTEMPTS=$(jq -r '.retries_max_attempts' "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-RETRIES_MODE=$(        jq -r '.retries_mode'         "${JQ_JSON}" 2>>"${JQ_ERROR_LOG}")
-
-# Build the required parameters for the AWS calls.
-
-## Do we have a profile?
-if [ -n "${PROFILE_NAME}" ]; then
-  AWS_CLI_PROFILE_PARAM="--profile=${PROFILE_NAME}"
-fi
-
-## Do we have a region?
+# Options shared by every AWS CLI call.
+COMMON_OPTIONS=()
 if [ -n "${REGION_NAME}" ]; then
-  AWS_CLI_REGION_PARAM="--region=${REGION_NAME}"
+  COMMON_OPTIONS+=("--region" "${REGION_NAME}")
+fi
+PROFILE_OPTIONS=()
+if [ -n "${PROFILE_NAME}" ]; then
+  PROFILE_OPTIONS+=("--profile" "${PROFILE_NAME}")
 fi
 
-## Do we need to assume a role?
+# Do we need to assume a role?
 if [ -n "${ASSUME_ROLE_ARN}" ]; then
-
-  ### Do we have an external ID?
+  STS_ARGS=(sts assume-role --role-arn "${ASSUME_ROLE_ARN}" --role-session-name "${ROLE_SESSION_NAME:-AssumingRole}" --output json)
   if [ -n "${EXTERNAL_ID}" ]; then
-    AWS_CLI_EXTERNAL_ID_PARAM="--external-id=${EXTERNAL_ID}"
+    STS_ARGS+=("--external-id" "${EXTERNAL_ID}")
   fi
+  if ! aws "${STS_ARGS[@]}" ${PROFILE_OPTIONS[@]+"${PROFILE_OPTIONS[@]}"} ${COMMON_OPTIONS[@]+"${COMMON_OPTIONS[@]}"} \
+    >"${WORK_DIR}/aws_sts.json" 2>"${WORK_DIR}/aws_sts_error.log"; then
+    fail 'The call to AWS to get temporary credentials failed'
+  fi
+  AWS_ACCESS_KEY_ID=$(jq -er '.Credentials.AccessKeyId' "${WORK_DIR}/aws_sts.json")
+  AWS_SECRET_ACCESS_KEY=$(jq -er '.Credentials.SecretAccessKey' "${WORK_DIR}/aws_sts.json")
+  AWS_SESSION_TOKEN=$(jq -er '.Credentials.SessionToken' "${WORK_DIR}/aws_sts.json")
+  export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
 
-  ### Get temporary credentials from AWS STS
-  if ! eval "aws sts assume-role \
-    --role-arn ${ASSUME_ROLE_ARN} \
-    ${AWS_CLI_EXTERNAL_ID_PARAM:-} \
-    --role-session-name ${ROLE_SESSION_NAME:-AssumingRole} \
-    --output json \
-    --debug \
-    ${AWS_CLI_PROFILE_PARAM:-} \
-    ${AWS_CLI_REGION_PARAM:-} \
-    " \
-    >"${AWS_STS_JSON}" \
-    2>"${AWS_STS_ERROR_LOG}"; then
-      echo '{"error":"The call to AWS to get temporary credentials failed"}' >&2
-      exit 4
-    fi
-  export AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' "$AWS_STS_JSON")
-  export AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' "$AWS_STS_JSON")
-  export AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' "$AWS_STS_JSON")
-
-  ### Having assumed a role, drop the profile as that will override any credentials retrieved by the assumed role when
-  ### reused as part of the AWS CLI call.
-  ### References :
-  ### 1. https://github.com/digitickets/terraform-aws-cli/issues/11 - Thank you Garrett Blinkhorn.
-  ### 2. https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_temp_use-resources.html#using-temp-creds-sdk-cli
-  unset AWS_CLI_PROFILE_PARAM
+  # Having assumed a role, drop the profile as it would override the assumed credentials.
+  # See https://github.com/digitickets/terraform-aws-cli/issues/11
+  PROFILE_OPTIONS=()
 fi
 
-# Do we have a query?
+# Do we have a query? Passed as a single argument, so JMESPath quotes need no escaping.
+QUERY_OPTIONS=()
 if [ -n "${AWS_CLI_QUERY}" ]; then
-  AWS_CLI_QUERY_PARAM="--query='${AWS_CLI_QUERY}'"
+  QUERY_OPTIONS+=("--query" "${AWS_CLI_QUERY}")
 fi
 
-# Disable any assigned pager
+# Disable any assigned pager and configure retries.
 export AWS_PAGER=""
-
-# Configure retries
 export AWS_RETRY_MODE="${RETRIES_MODE}"
 export AWS_MAX_ATTEMPTS="${RETRIES_MAX_ATTEMPTS}"
 
-# Run the AWS_CLI command
-AWS_COMMAND_LINE=""
-if ! eval "aws \
-  ${AWS_CLI_COMMANDS} \
-  ${AWS_CLI_PROFILE_PARAM:-} \
-  ${AWS_CLI_REGION_PARAM:-} \
-  ${AWS_CLI_QUERY_PARAM:-} \
+# Run the AWS CLI command. The output is returned in-band, so no results file is left behind.
+if aws "${AWS_CLI_COMMANDS[@]}" \
+  ${PROFILE_OPTIONS[@]+"${PROFILE_OPTIONS[@]}"} \
+  ${COMMON_OPTIONS[@]+"${COMMON_OPTIONS[@]}"} \
+  ${QUERY_OPTIONS[@]+"${QUERY_OPTIONS[@]}"} \
   --output json \
-  " \
-  >"${AWS_CALL_JSON}" \
-  2> "${AWS_CALL_ERROR_LOG}"; then
-  # Convert the error into a JSON string and exit
-  jq -MRcs '{"error":gsub("^\n+|\n+$"; "")}' "${AWS_CALL_ERROR_LOG}" > "${RESULTS_FILE}"
-  cat "${RESULTS_FILE}"
-  exit 0
-fi
-
-# All is good.
-cp "${AWS_CALL_JSON}" "${RESULTS_FILE}"
-echo '{"result":"'"${RESULTS_FILE}"'"}'
-
-# Clean up, but allow a test mode to retain all files except the result
-if [ "${MODULE_TERRAFORM_AWS_CLI_RETAIN_LOGS}" != "true" ]; then
-  rm -rf \
-    "${JQ_JSON}" \
-    "${JQ_ERROR_LOG}" \
-    "${AWS_STS_JSON}" \
-    "${AWS_STS_ERROR_LOG}" \
-    "${AWS_CALL_JSON}" \
-    "${AWS_CALL_ERROR_LOG}"
+  >"${WORK_DIR}/aws_call.json" 2>"${WORK_DIR}/aws_call_error.log"; then
+  jq -Rsc '{content: .}' <"${WORK_DIR}/aws_call.json"
+else
+  # Convert the error into a JSON document, returned as the content.
+  jq -Rsc '{content: ({error: gsub("^\n+|\n+$"; "")} | tojson)}' <"${WORK_DIR}/aws_call_error.log"
 fi

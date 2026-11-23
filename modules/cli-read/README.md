@@ -21,14 +21,12 @@
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.6 |
 | <a name="requirement_external"></a> [external](#requirement\_external) | ~> 2 |
-| <a name="requirement_local"></a> [local](#requirement\_local) | ~> 2 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
 | <a name="provider_external"></a> [external](#provider\_external) | 2.4.2 |
-| <a name="provider_local"></a> [local](#provider\_local) | 2.9.1 |
 
 ## Modules
 
@@ -39,7 +37,6 @@ No modules.
 | Name | Type |
 | ---- | ---- |
 | [external_external.awscli_program](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external) | data source |
-| [local_file.awscli_results_file](https://registry.terraform.io/providers/hashicorp/local/latest/docs/data-sources/file) | data source |
 
 ## Inputs
 
@@ -47,7 +44,7 @@ No modules.
 | ---- | ----------- | ---- | ------- | :------: | ---------- |
 | <a name="input_alternative_path"></a> [alternative\_path](#input\_alternative\_path) | Use an alternative path for all files produced internally | `string` | `""` | no | None |
 | <a name="input_assume_role_arn"></a> [assume\_role\_arn](#input\_assume\_role\_arn) | The ARN of the role being assumed (optional).<br/><br/>  The optional ARN must match the format documented in https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html. | `string` | `""` | no | The optional ARN must match the format documented in https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html. |
-| <a name="input_aws_cli_commands"></a> [aws\_cli\_commands](#input\_aws\_cli\_commands) | The AWS CLI command, subcommands, and options.<br/><br/>  For options that can accept a value, then the following examples are both fine to use:<br/>  1. `"--option", "value"`<br/>  2. `"--option=value"`<br/><br/>  In the event that the value contains a space, it must be wrapped with quotes.<br/>  1. `"--option", "'value with a space wrapped in single quotes'"`<br/>  2. `"--option='value with a space wrapped in single quotes'"` | `list(string)` | n/a | yes | The `var.aws_cli_commands` cannot be empty. |
+| <a name="input_aws_cli_commands"></a> [aws\_cli\_commands](#input\_aws\_cli\_commands) | The AWS CLI service, operation, and options, without the leading `aws`.<br/><br/>  Each element is passed to the AWS CLI as exactly one argument. Nothing is interpreted by a shell, so values containing<br/>  spaces, quotes, or other special characters must NOT be wrapped in extra quotes. For options that accept a value,<br/>  both of these forms work:<br/>  1. `"--option", "value with spaces"`<br/>  2. `"--option=value with spaces"` | `list(string)` | n/a | yes | The `var.aws_cli_commands` cannot be empty. |
 | <a name="input_aws_cli_query"></a> [aws\_cli\_query](#input\_aws\_cli\_query) | The `--query` value for the AWS CLI call.<br/><br/>  The value for `var.aws_cli_query` is based upon JMESPath, and you can get good information from https://jmespath.org.<br/>  If not supplied, then the entire results from the AWS CLI call will be returned. | `string` | `""` | no | None |
 | <a name="input_external_id"></a> [external\_id](#input\_external\_id) | External id for assuming the role (optional).<br/><br/>  The length of optional external\_id, when supplied, must be between 2 and 1224 characters.<br/>  The optional external\_id can only contain upper- and lower-case alphanumeric characters with no spaces. You can also include underscores or any of the following characters: `=,.@-`.<br/>  The optional external\_id match the regular expression `^[\w=,.@-]*$`. | `string` | `""` | no | The length of optional external\_id, when supplied, must be between 2 and 1224 characters.<br>The optional external\_id must match the regular expression '^[\w=,.@-]*$'. |
 | <a name="input_profile"></a> [profile](#input\_profile) | The specific AWS profile to use (must be configured appropriately and is optional).<br/><br/>  The optional profile must start with a letter and can only contain letters, numbers, hyphens, and underscores. | `string` | `""` | no | The optional profile must start with a letter and can only contain letters, numbers, hyphens, and underscores. |

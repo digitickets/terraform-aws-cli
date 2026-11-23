@@ -1,41 +1,42 @@
 locals {
-  joined_aws_cli_command = join(" ", var.aws_cli_commands)
-  external_program_query = {
+  # Every value is passed to the script as one JSON document. Nothing is ever interpolated into a shell command line.
+  script_input = {
     assume_role_arn      = var.assume_role_arn
     role_session_name    = length(var.assume_role_arn) > 0 ? var.role_session_name : ""
-    aws_cli_commands     = local.joined_aws_cli_command
+    aws_cli_commands     = var.aws_cli_commands
     aws_cli_query        = var.aws_cli_query
     external_id          = var.external_id
     profile              = var.profile
     region               = var.region
-    retries_max_attempts = var.retries.max_attempts
+    retries_max_attempts = tostring(var.retries.max_attempts)
     retries_mode         = var.retries.mode
   }
-  standard_results_file    = format("%s/temp/%s/results.json", path.module, md5(join("-", values(local.external_program_query))))
-  alternative_results_file = format("%s/results.json", var.alternative_path)
-  results_file             = length(var.alternative_path) == 0 ? local.standard_results_file : local.alternative_results_file
 }
 
+# The `external` provider only accepts a flat map of strings as a result, so the script returns the raw AWS CLI output
+# as a single string, which is JSON decoded here. This preserves all the data types returned from AWS without writing
+# a results file to disk.
 data "external" "awscli_program" {
-  program = [
-    format("%s/scripts/aws_cli_runner.sh", path.module),
-    local.results_file
-  ]
-  query = local.external_program_query
-}
-
-# Due to the way the Terraform External Provider has various limitations on processing the output of an external
-# program, the script that is called creates a separate file and is then referenced via a local_file data block.
-# Amongst the chief benefits is that all the data types returned from AWS are not converted to strings for Terraform to
-# access.
-data "local_file" "awscli_results_file" {
-  depends_on = [data.external.awscli_program]
-  filename   = local.results_file
+  program = ["bash", format("%s/scripts/aws_cli_runner.sh", path.module)]
+  query = {
+    input = jsonencode(local.script_input)
+  }
 
   lifecycle {
     postcondition {
-      condition     = var.suppress_error_handling ? true : (try(jsondecode(self.content).error, false) == false)
-      error_message = try(jsondecode(self.content).error, "Unknown error")
+      condition     = var.suppress_error_handling ? true : (try(jsondecode(self.result.content).error, false) == false)
+      error_message = try(jsondecode(self.result.content).error, "Unknown error")
     }
+  }
+}
+
+locals {
+  content = data.external.awscli_program.result.content
+}
+
+check "alternative_path_is_deprecated" {
+  assert {
+    condition     = var.alternative_path == ""
+    error_message = "`var.alternative_path` is deprecated and ignored. No results file is written to disk any more."
   }
 }

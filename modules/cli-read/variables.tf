@@ -1,15 +1,13 @@
 # Variables related to calling AWS CLI
 variable "aws_cli_commands" {
   description = <<EOT
-  The AWS CLI command, subcommands, and options.
+  The AWS CLI service, operation, and options, without the leading `aws`.
 
-  For options that can accept a value, then the following examples are both fine to use:
-  1. `"--option", "value"`
-  2. `"--option=value"`
-
-  In the event that the value contains a space, it must be wrapped with quotes.
-  1. `"--option", "'value with a space wrapped in single quotes'"`
-  2. `"--option='value with a space wrapped in single quotes'"`
+  Each element is passed to the AWS CLI as exactly one argument. Nothing is interpreted by a shell, so values containing
+  spaces, quotes, or other special characters must NOT be wrapped in extra quotes. For options that accept a value,
+  both of these forms work:
+  1. `"--option", "value with spaces"`
+  2. `"--option=value with spaces"`
 EOT
   type        = list(string)
 
