@@ -1,0 +1,13 @@
+terraform {
+  required_version = "~> 1.6" # Updated by inf-base : Wed, 16 Sep 2026 12:12:41 +0000
+  required_providers {
+    external = {
+      source  = "hashicorp/external"
+      version = "~> 2" # Updated by inf-base : Mon, 23 Feb 2026 12:20:22 +0000
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2" # Updated by inf-base : Mon, 23 Feb 2026 12:20:22 +0000
+    }
+  }
+}
