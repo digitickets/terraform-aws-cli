@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# A fake `aws` binary for tests. It never contacts AWS.
+#
+# Every invocation is appended to "${FAKE_AWS_LOG}" (if set) as one JSON line containing the exact argv received and
+# the fake access key id in effect, so tests can prove exactly what was (or was not) run, and under which credentials.
+#
+# Behaviour is driven by the arguments, so that each Terraform test run can choose it without changing the environment:
+#   --version                            print a version string.
+#   sts assume-role --role-arn <arn>     return fake credentials derived from <arn>; ARNs containing "denied" fail.
+#   --fake-error=<Code>                  fail like the AWS CLI does for a service error with that error code.
+#   --fake-output=<json>                 print <json> (already in the shape `--query` would have produced).
+#   anything else                        print {"argv": [...]} so callers can see the arguments that arrived.
+
+set -euo pipefail
+
+if [ -n "${FAKE_AWS_LOG:-}" ]; then
+  jq -cn \
+    --arg key "${AWS_ACCESS_KEY_ID:-}" \
+    --arg profile "${AWS_PROFILE:-}" \
+    '{argv: $ARGS.positional, access_key_id: $key, aws_profile: $profile}' \
+    --args -- "$@" >>"${FAKE_AWS_LOG}"
+fi
+
+for arg in "$@"; do
+  case "${arg}" in
+    --version)
+      echo 'aws-cli/2.99.0 Python/3.0.0 stub'
+      exit 0
+      ;;
+    --fake-error=*)
+      printf '\naws: [ERROR]: An error occurred (%s) when calling the StubOperation operation: stub failure\n' "${arg#--fake-error=}" >&2
+      exit 254
+      ;;
+    --fake-output=*)
+      printf '%s\n' "${arg#--fake-output=}"
+      exit 0
+      ;;
+  esac
+done
+
+if [ "${1:-}" = "sts" ] && [ "${2:-}" = "assume-role" ]; then
+  role_arn=""
+  previous=""
+  for arg in "$@"; do
+    if [ "${previous}" = "--role-arn" ]; then
+      role_arn="${arg}"
+    fi
+    previous="${arg}"
+  done
+  case "${role_arn}" in
+    *denied*)
+      printf '\naws: [ERROR]: An error occurred (AccessDenied) when calling the AssumeRole operation: stub denied\n' >&2
+      exit 254
+      ;;
+  esac
+  account="${role_arn#*::}"
+  account="${account%%:*}"
+  jq -n --arg key "ASIAFAKE${account}" \
+    '{Credentials: {AccessKeyId: $key, SecretAccessKey: "fake-secret-not-real", SessionToken: "fake-token-not-real"}}'
+  exit 0
+fi
+
+jq -cn '{argv: $ARGS.positional}' --args -- "$@"

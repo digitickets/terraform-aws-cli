@@ -1,8 +1,0 @@
-[
-  {
-    "variable": "var.aws_cli_commands",
-    "problems": [
-      "The `var.aws_cli_commands` cannot be empty."
-    ]
-  }
-]

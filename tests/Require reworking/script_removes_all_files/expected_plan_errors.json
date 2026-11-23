@@ -1,8 +1,0 @@
-[
-  {
-    "variable": "data.local_file.awscli_results_file",
-    "problems": [
-      "An error occurred (AccessDenied) when calling the ListObjects operation: Access Denied"
-    ]
-  }
-]
