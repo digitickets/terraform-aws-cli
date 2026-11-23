@@ -46,9 +46,10 @@ read_argv() {
   shift
   input_jq "(${filter}) | (type == \"array\") and all(.[]; type == \"string\" and (contains(\"\\u0000\") | not))" -e "$@" >/dev/null ||
     fail 'every command must be a list of strings without NUL characters'
+  local arg
   ARGV=()
-  while IFS= read -r -d '' item; do
-    ARGV+=("${item}")
+  while IFS= read -r -d '' arg; do
+    ARGV+=("${arg}")
   done < <(input_jq "(${filter})[] | (., \"\\u0000\")" -j "$@")
 }
 
@@ -105,7 +106,7 @@ else
   COMMAND_OUTPUT=/dev/null
 fi
 
-# Run the commands, in order.
+# 1. The plain commands, in order.
 COMMAND_COUNT=$(input_jq '.commands // [] | length' -r)
 index=0
 while [ "${index}" -lt "${COMMAND_COUNT}" ]; do
@@ -113,4 +114,41 @@ while [ "${index}" -lt "${COMMAND_COUNT}" ]; do
   [ "${#ARGV[@]}" -gt 0 ] || fail "command $((index + 1)) is empty"
   run_aws "command $((index + 1))/${COMMAND_COUNT}" "${COMMAND_OUTPUT}" "${ARGV[@]}"
   index=$((index + 1))
+done
+
+# 2. The per-item commands, in order. Each runs its read-only `list` command with `--query`, which must produce a JSON
+#    array of strings or numbers, then runs `command` once per item with every `{{item}}` in each argument replaced by
+#    the item. The replacement is done by jq (literal split/join), never by a shell.
+STEP_COUNT=$(input_jq '.for_each_item_commands // [] | length' -r)
+step=0
+while [ "${step}" -lt "${STEP_COUNT}" ]; do
+  label="for_each_item_commands $((step + 1))/${STEP_COUNT}"
+  QUERY=$(input_jq '.for_each_item_commands[$i].query' -r --argjson i "${step}")
+  MAX_ITEMS=$(input_jq '.for_each_item_commands[$i].max_items' -r --argjson i "${step}")
+
+  read_argv '.for_each_item_commands[$i].list' --argjson i "${step}"
+  run_aws "${label} list" "${WORK_DIR}/items.json" "${ARGV[@]}" --query "${QUERY}" --output json
+
+  ITEMS=$(jq -c 'if . == null then [] else . end' "${WORK_DIR}/items.json" 2>/dev/null) || fail "${label}: the list command did not return JSON"
+  [ -n "${ITEMS}" ] || ITEMS='[]'
+  printf '%s' "${ITEMS}" | jq -e 'type == "array" and all(.[]; type == "string" or type == "number")' >/dev/null ||
+    fail "${label}: the list query must produce a JSON array of strings or numbers"
+  printf '%s' "${ITEMS}" | jq -e 'all(.[]; tostring | contains("\u0000") | not)' >/dev/null ||
+    fail "${label}: items must not contain NUL characters"
+  ITEM_COUNT=$(printf '%s' "${ITEMS}" | jq 'length')
+  if [ "${ITEM_COUNT}" -gt "${MAX_ITEMS}" ]; then
+    fail "${label}: the list returned ${ITEM_COUNT} items, more than max_items (${MAX_ITEMS}); nothing was run"
+  fi
+  if [ "${SHOW_OUTPUT}" = "true" ]; then
+    printf 'cli-exec: %s: items %s\n' "${label}" "${ITEMS}"
+  fi
+
+  item_index=0
+  while [ "${item_index}" -lt "${ITEM_COUNT}" ]; do
+    read_argv '.for_each_item_commands[$i].command | map(split("{{item}}") | join($items[$j] | tostring))' \
+      --argjson i "${step}" --argjson j "${item_index}" --argjson items "${ITEMS}"
+    run_aws "${label} item $((item_index + 1))/${ITEM_COUNT}" "${COMMAND_OUTPUT}" "${ARGV[@]}"
+    item_index=$((item_index + 1))
+  done
+  step=$((step + 1))
 done

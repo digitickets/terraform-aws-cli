@@ -5,7 +5,8 @@ locals {
   # Every value is passed to the script as one JSON document in the provisioner's environment. Nothing is ever
   # interpolated into the shell command line.
   script_input = {
-    commands = var.commands
+    commands               = var.commands
+    for_each_item_commands = var.for_each_item_commands
     credentials = var.assume_role == null ? { mode = "ambient" } : {
       mode         = "assume_role"
       role_arn     = var.assume_role.arn
@@ -28,6 +29,13 @@ resource "terraform_data" "aws_cli_exec" {
     triggers           = var.triggers
     script_sha256      = filesha256(local.script_path)
     credentials_sha256 = filesha256(local.credentials_path)
+  }
+
+  lifecycle {
+    precondition {
+      condition     = length(var.commands) + length(var.for_each_item_commands) > 0
+      error_message = "At least one of `var.commands` or `var.for_each_item_commands` must be supplied."
+    }
   }
 
   provisioner "local-exec" {

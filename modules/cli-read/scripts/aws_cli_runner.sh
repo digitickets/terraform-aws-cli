@@ -40,9 +40,10 @@ read_argv() {
   printf '%s' "${INPUT}" | jq -e --arg key "$1" \
     '(.[$key] | type == "array") and all(.[$key][]; type == "string" and (contains("\u0000") | not))' >/dev/null ||
     fail "$1 must be a list of strings without NUL characters"
+  local arg
   ARGV=()
-  while IFS= read -r -d '' item; do
-    ARGV+=("${item}")
+  while IFS= read -r -d '' arg; do
+    ARGV+=("${arg}")
   done < <(printf '%s' "${INPUT}" | jq -j --arg key "$1" '.[$key][] | (., "\u0000")')
 }
 

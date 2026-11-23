@@ -14,15 +14,72 @@ variable "commands" {
   (it logs raw responses, including credentials) are not allowed.
 EOD
   type        = list(list(string))
+  default     = []
 
   validation {
-    condition     = length(var.commands) > 0 && alltrue([for command in var.commands : length(command) > 0])
-    error_message = "The `var.commands` must contain at least one command, and no command can be empty."
+    condition     = alltrue([for command in var.commands : length(command) > 0])
+    error_message = "No command in `var.commands` can be empty."
   }
 
   validation {
     condition     = alltrue([for command in var.commands : alltrue([for arg in command : !can(regex("^--(profile|debug)(=|$)", arg))])])
     error_message = "The `var.commands` must not contain `--profile` (it would override the assumed role) or `--debug` (it logs raw responses, including credentials)."
+  }
+}
+
+variable "for_each_item_commands" {
+  description = <<EOD
+  Commands that act on each item returned by an earlier, read-only command. They run after `var.commands`, in order.
+
+  For each entry, `list` (a read-only command: its operation must start with `describe-`, `list-`, `get-`, or
+  `batch-get-`) is run with `--query` set to `query`, which must produce a JSON array of strings or numbers (`null` counts as empty). `command` is
+  then run once per item, with every `{{item}}` in each of its arguments replaced by the item. The replacement is
+  literal and never interpreted by a shell. If the list returns more than `max_items` items, nothing is run and the
+  apply fails. For example:
+
+  ```hcl
+  for_each_item_commands = [
+    {
+      list    = ["logs", "describe-log-groups", "--log-group-name-prefix", "/app/"]
+      query   = "logGroups[?retentionInDays == null].logGroupName"
+      command = ["logs", "put-retention-policy", "--log-group-name", "{{item}}", "--retention-in-days", "30"]
+    },
+  ]
+  ```
+
+  The items are resolved at apply time, so they are not shown in the plan.
+EOD
+  type = list(object({
+    list      = list(string)
+    query     = string
+    command   = list(string)
+    max_items = optional(number, 100)
+  }))
+  default = []
+
+  validation {
+    condition     = alltrue([for step in var.for_each_item_commands : can(regex("^(describe|list|get|batch-get)-[a-z0-9-]+$", try(step.list[1], "")))])
+    error_message = "Each `list` in `var.for_each_item_commands` must be a service and a read-only operation (one starting with `describe-`, `list-`, `get-`, or `batch-get-`), followed by its options."
+  }
+
+  validation {
+    condition     = alltrue([for step in var.for_each_item_commands : length(trimspace(step.query)) > 0])
+    error_message = "Each `query` in `var.for_each_item_commands` must be a JMESPath expression producing a list of strings or numbers."
+  }
+
+  validation {
+    condition     = alltrue([for step in var.for_each_item_commands : length(step.command) > 0 && anytrue([for arg in step.command : strcontains(arg, "{{item}}")])])
+    error_message = "Each `command` in `var.for_each_item_commands` must contain `{{item}}` in at least one argument."
+  }
+
+  validation {
+    condition     = alltrue([for step in var.for_each_item_commands : step.max_items >= 1 && step.max_items <= 1000 && floor(step.max_items) == step.max_items])
+    error_message = "Each `max_items` in `var.for_each_item_commands` must be a whole number between 1 and 1000."
+  }
+
+  validation {
+    condition     = alltrue([for step in var.for_each_item_commands : alltrue([for arg in concat(step.list, step.command) : !can(regex("^--(profile|debug|query|output)(=|$)", arg))])])
+    error_message = "The `var.for_each_item_commands` must not contain `--profile`, `--debug`, `--query` (use `query`), or `--output`."
   }
 }
 
