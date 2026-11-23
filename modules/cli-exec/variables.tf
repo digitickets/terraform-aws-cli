@@ -104,7 +104,7 @@ EOD
   }
 
   validation {
-    condition     = var.assume_role == null ? true : (var.assume_role.external_id == "" || can(regex("^[\\w+=,.@:/-]{2,1224}$", var.assume_role.external_id)))
+    condition     = var.assume_role == null ? true : (var.assume_role.external_id == "" || (length(var.assume_role.external_id) >= 2 && length(var.assume_role.external_id) <= 1224 && can(regex("^[\\w+=,.@:/-]+$", var.assume_role.external_id))))
     error_message = "The `var.assume_role.external_id`, when supplied, must be 2 to 1224 characters matching `[\\w+=,.@:/-]`."
   }
 
