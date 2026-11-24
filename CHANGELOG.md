@@ -33,9 +33,13 @@ This is a breaking release and should be tagged `8.0.0`. See "Upgrading from 7.x
 - SECURITY: Assumed-role credentials are never written to disk. Previously `aws_sts.json`, and the `--debug` log of the
   `sts assume-role` call, both contained the temporary credentials, and were left behind whenever a call failed.
 - SECURITY: Once a role is assumed, neither `profile`, `AWS_PROFILE` nor `--profile` can override its credentials.
-- SECURITY: cli-read only allows read-only operations (`describe-*`, `list-*`, `get-*`, `batch-get-*`) and blocks, by
-  default, operations that return secrets or credentials. Each error names the equivalent AWS provider block. Added
-  `allow_denylisted_operations` and `additional_denied_operations`.
+- SECURITY: cli-read only allows read-only operations (`describe-*`, `list-*`, `get-*`, `batch-get-*`, and an
+  allowlist of reviewed `check-*` operations such as `wafv2 check-capacity`) and blocks, by default, operations that
+  return secrets or credentials. `license-manager check-in-license` (mutating), and
+  `lightsail check-subdomain-availability` with `--reserve`, are always rejected;
+  `route53domains check-domain-transferability` is denylisted because its `--auth-code` would be stored in state.
+  Each denylist error names the equivalent AWS provider block. Added `allow_denylisted_operations` and
+  `additional_denied_operations`.
 - SECURITY: Temporary files are private (`umask 077`, `mktemp -d`) and removed on every exit path. Debug logging is
   opt-in through the new `debug_log_dir` input and never records credentials or results.
 - The AWS CLI result is returned in-band, so the `hashicorp/local` provider and the results file are no longer used.

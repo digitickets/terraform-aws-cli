@@ -32,6 +32,7 @@ locals {
     "sso get-role-credentials"                      = "${local.credentials_in_state} ${local.use_provider_assumption}"
     "cognito-identity get-credentials-for-identity" = "${local.credentials_in_state} ${local.no_provider_equivalent}"
     "cognito-identity get-open-id-token"            = "it returns an identity token, which would be stored in Terraform state and shown in plan output. ${local.no_provider_equivalent}"
+    "route53domains check-domain-transferability"   = "its `--auth-code` argument is a secret (the registrar's transfer authorisation code), which would be stored in Terraform state and shown in plan output. ${local.no_provider_equivalent}"
     "iam get-credential-report"                     = "it returns the credential status of every IAM user (password and access key ages, MFA state), which would be stored in Terraform state and shown in plan output. ${local.no_provider_equivalent}"
   }
 

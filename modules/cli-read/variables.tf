@@ -9,9 +9,19 @@ variable "aws_cli_commands" {
   1. `"--option", "value with spaces"`
   2. `"--option=value with spaces"`
 
-  The first element must be the service and the second a read-only operation (one starting with `describe-`, `list-`,
-  `get-`, or `batch-get-`). Operations known to return secrets or credentials are blocked by default; see
-  `var.allow_denylisted_operations`. To run mutating commands, use the apply-only `modules/cli-exec` module.
+  The first element must be the service and the second a read-only operation: one starting with `describe-`, `list-`,
+  `get-`, or `batch-get-`, or one of the reviewed `check-` operations below. Operations known to return secrets or
+  credentials are blocked by default; see `var.allow_denylisted_operations`. To run mutating commands, use the
+  apply-only `modules/cli-exec` module.
+
+  `check-` is not a reliably read-only verb (`license-manager check-in-license` changes state), so only these reviewed
+  `check-` operations are allowed, and any added to the AWS CLI later are rejected until reviewed:
+  `accessanalyzer check-access-not-granted`, `accessanalyzer check-no-new-access`, `accessanalyzer check-no-public-access`,
+  `bedrock-agent-runtime check-ingested-document-acl`, `elasticbeanstalk check-dns-availability`,
+  `glue check-schema-version-validity`, `lightsail check-subdomain-availability` (without `--reserve`, which reserves the
+  subdomain), `qbusiness check-document-access`, `route53domains check-domain-availability`,
+  `route53domains check-domain-transferability` (denylisted by default), `sns check-if-phone-number-is-opted-out`, and
+  `wafv2 check-capacity`.
 EOT
   type        = list(string)
 
@@ -26,8 +36,32 @@ EOT
   }
 
   validation {
-    condition     = can(regex("^[a-z0-9][a-z0-9-]*$", try(var.aws_cli_commands[0], ""))) && can(regex("^(describe|list|get|batch-get)-[a-z0-9-]+$", try(var.aws_cli_commands[1], "")))
-    error_message = "The `var.aws_cli_commands` must start with a service and a read-only operation (one starting with `describe-`, `list-`, `get-`, or `batch-get-`), for example `[\"ec2\", \"describe-instances\"]`. cli-read runs at plan and apply time, so it must never change anything. To run a mutating command at apply time only, use the `modules/cli-exec` module."
+    # These rules cannot be overridden: `var.allow_denylisted_operations` only unblocks entries on the denylist.
+    # Reviewed `check-` operations are listed here inline, as variable validations cannot refer to locals before
+    # Terraform 1.9.
+    condition = can(regex("^[a-z0-9][a-z0-9-]*$", try(var.aws_cli_commands[0], ""))) && (
+      can(regex("^(describe|list|get|batch-get)-[a-z0-9-]+$", try(var.aws_cli_commands[1], ""))) ||
+      contains([
+        "accessanalyzer check-access-not-granted",
+        "accessanalyzer check-no-new-access",
+        "accessanalyzer check-no-public-access",
+        "bedrock-agent-runtime check-ingested-document-acl",
+        "elasticbeanstalk check-dns-availability",
+        "glue check-schema-version-validity",
+        "lightsail check-subdomain-availability",
+        "qbusiness check-document-access",
+        "route53domains check-domain-availability",
+        "route53domains check-domain-transferability",
+        "sns check-if-phone-number-is-opted-out",
+        "wafv2 check-capacity",
+      ], format("%s %s", try(var.aws_cli_commands[0], ""), try(var.aws_cli_commands[1], "")))
+    )
+    error_message = "The `var.aws_cli_commands` must start with a service and a read-only operation: one starting with `describe-`, `list-`, `get-`, or `batch-get-`, or a reviewed `check-` operation (see the variable's description), for example `[\"ec2\", \"describe-instances\"]`. cli-read runs at plan and apply time, so it must never change anything. To run a mutating command at apply time only, use the `modules/cli-exec` module."
+  }
+
+  validation {
+    condition     = !(try(var.aws_cli_commands[0], "") == "lightsail" && try(var.aws_cli_commands[1], "") == "check-subdomain-availability" && anytrue([for arg in var.aws_cli_commands : can(regex("^--reserve(=|$)", arg))]))
+    error_message = "The `var.aws_cli_commands` must not use `--reserve` with `lightsail check-subdomain-availability`, as it reserves the subdomain for your account. cli-read runs at plan and apply time, so it must never change anything. To reserve a subdomain at apply time only, use the `modules/cli-exec` module."
   }
 
   validation {

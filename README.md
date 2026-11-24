@@ -53,7 +53,7 @@ This repository contains two modules, for two different kinds of use:
 | Runs during `terraform apply` | Yes (unless the plan already read it) | Yes, on create, and when replaced |
 | Runs during `terraform refresh` | Yes | No |
 | Reruns | On every plan, apply and refresh | Only when `commands`, `for_each_item_commands`, `assume_role`, `region`, `show_output`, `ignore_error_codes`, `triggers`, or this module's scripts change |
-| Allowed operations | Read-only: `describe-*`, `list-*`, `get-*`, `batch-get-*`, minus a denylist of operations that return secrets | Any |
+| Allowed operations | Read-only: `describe-*`, `list-*`, `get-*`, `batch-get-*` and reviewed `check-*` operations, minus a denylist of operations that return secrets | Any |
 | Results available to Terraform | Yes: `result`, `result_raw`, `result_was_decoded` | No. Output is discarded unless `show_output = true`, and then only shown in the apply log |
 | Stored in state | Inputs, and the full result | Inputs (in `triggers_replace`), never results |
 | Credentials needed | Read-only | Whatever the commands need |
@@ -205,8 +205,29 @@ stop due to a `data` request against a non-existent target.
 ## Read-only operations only
 
 cli-read runs during every plan, so it must never change anything. `aws_cli_commands` must start with a service and an
-operation beginning `describe-`, `list-`, `get-` or `batch-get-`. Anything else is rejected with a message pointing to
-cli-exec. `--debug` and `--endpoint-url` are also rejected.
+operation beginning `describe-`, `list-`, `get-` or `batch-get-`, or one of the reviewed `check-` operations below.
+Anything else is rejected with a message pointing to cli-exec. `--debug` and `--endpoint-url` are also rejected.
+
+`check-` is not a reliably read-only verb: `license-manager check-in-license` returns a checked-out license, and
+`lightsail check-subdomain-availability --reserve` reserves the subdomain. So only these reviewed `check-` operations are
+allowed. A `check-` operation added to the AWS CLI later is rejected until it has been reviewed and added here.
+
+| Operation | Notes |
+| --------- | ----- |
+| `accessanalyzer check-access-not-granted` | |
+| `accessanalyzer check-no-new-access` | |
+| `accessanalyzer check-no-public-access` | |
+| `bedrock-agent-runtime check-ingested-document-acl` | |
+| `elasticbeanstalk check-dns-availability` | |
+| `glue check-schema-version-validity` | |
+| `lightsail check-subdomain-availability` | Not with `--reserve`, which reserves the subdomain. |
+| `qbusiness check-document-access` | The result includes the document's ACL and the user's groups and aliases. |
+| `route53domains check-domain-availability` | |
+| `route53domains check-domain-transferability` | Denylisted by default: its `--auth-code` argument is a secret. |
+| `sns check-if-phone-number-is-opted-out` | The phone number (personal data) is stored in state as an argument. |
+| `wafv2 check-capacity` | |
+
+These rules cannot be overridden: `allow_denylisted_operations` only unblocks operations on the denylist.
 
 ## Operations that return secrets are blocked
 
@@ -239,8 +260,10 @@ an error, so a typo cannot silently do nothing. You can block further operations
 
 ## What is stored in state and shown in plan output
 
-- **State** holds every cli-read input (including `external_id`) and the complete AWS CLI result, in the `external`
-  data source and in the module's outputs.
+- **State** holds every cli-read input (including `external_id` and every argument in `aws_cli_commands`) and the
+  complete AWS CLI result, in the `external` data source and in the module's outputs. This includes personal or identity
+  data, such as a phone number passed to `sns check-if-phone-number-is-opted-out`, or the ACLs, groups and aliases
+  returned by `qbusiness check-document-access`.
 - **Plan output** shows the outputs of your root module, and any AWS CLI error message.
 - **On disk**, nothing is kept. The script works in a private (`umask 077`) temporary directory that is removed on every
   exit path. `debug_log_dir` is opt-in and records arguments, exit codes and error messages only.

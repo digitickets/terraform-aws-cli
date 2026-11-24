@@ -230,6 +230,98 @@ run "alternative_path_is_deprecated" {
   expect_failures = [check.alternative_path_is_deprecated]
 }
 
+# `check-` operations: only reviewed ones are allowed, and the rule cannot be overridden.
+
+run "reviewed_check_operations_are_allowed" {
+  command = plan
+
+  variables {
+    aws_cli_commands = ["wafv2", "check-capacity", "--scope", "REGIONAL", "--rules", "file://rules.json"]
+  }
+
+  assert {
+    condition     = output.result.argv[1] == "check-capacity"
+    error_message = "A reviewed check- operation must run."
+  }
+}
+
+run "lightsail_subdomain_check_is_allowed_without_reserve" {
+  command = plan
+
+  variables {
+    aws_cli_commands = ["lightsail", "check-subdomain-availability", "--subdomain-name", "blog", "--no-reserve"]
+  }
+
+  assert {
+    condition     = output.result.argv[1] == "check-subdomain-availability"
+    error_message = "lightsail check-subdomain-availability must run when it does not reserve the subdomain."
+  }
+}
+
+run "lightsail_subdomain_check_with_reserve_is_rejected" {
+  command = plan
+
+  variables {
+    aws_cli_commands = ["lightsail", "check-subdomain-availability", "--subdomain-name", "blog", "--reserve", "--marker=reserve"]
+  }
+
+  expect_failures = [var.aws_cli_commands]
+}
+
+run "mutating_check_in_license_is_rejected_even_when_allowed" {
+  command = plan
+
+  variables {
+    aws_cli_commands            = ["license-manager", "check-in-license", "--license-consumption-token", "token", "--marker=check-in"]
+    allow_denylisted_operations = { "license-manager check-in-license" = true }
+  }
+
+  expect_failures = [var.aws_cli_commands]
+}
+
+run "unreviewed_check_operations_are_rejected" {
+  command = plan
+
+  variables {
+    aws_cli_commands = ["example", "check-something-new", "--marker=unreviewed-check"]
+  }
+
+  expect_failures = [var.aws_cli_commands]
+}
+
+run "operations_merely_starting_with_check_are_rejected" {
+  command = plan
+
+  variables {
+    aws_cli_commands = ["license-manager", "checkout-license", "--product-sku", "sku", "--marker=checkout"]
+  }
+
+  expect_failures = [var.aws_cli_commands]
+}
+
+run "domain_transferability_check_is_denylisted" {
+  command = plan
+
+  variables {
+    aws_cli_commands = ["route53domains", "check-domain-transferability", "--domain-name", "example.com", "--auth-code", "not-a-real-code", "--marker=transfer"]
+  }
+
+  expect_failures = [data.external.awscli_program]
+}
+
+run "rejected_check_operations_never_reach_the_aws_cli" {
+  command = plan
+
+  variables {
+    aws_cli_commands = ["ec2", "describe-regions"]
+  }
+
+  assert {
+    condition     = output.result_was_decoded && length(regexall("--marker=(reserve|check-in|unreviewed-check|checkout|transfer)", file(".fake_aws.log"))) == 0
+    error_message = "A rejected check- command was passed to the AWS CLI."
+  }
+}
+
 # Validation rules carried over from the original test suite.
 
 run "invalid_role_arn_is_rejected" {
