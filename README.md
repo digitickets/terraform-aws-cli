@@ -40,23 +40,23 @@ Provider.
 
 This repository contains two modules, for two different kinds of use:
 
-| Module | Use it for | Runs during | Implemented with |
-| ------ | ---------- | ----------- | ---------------- |
-| [`modules/cli-read`](modules/cli-read) (also the root module) | Read-only queries whose results you use in your configuration | `plan`, `apply` and `refresh`, every time | `data "external"` |
-| [`modules/cli-exec`](modules/cli-exec) | Mutating commands | `apply` only, and only when its inputs change | `terraform_data` + `local-exec` |
+| Module                                                        | Use it for                                                    | Runs during                                   | Implemented with                |
+|---------------------------------------------------------------|---------------------------------------------------------------|-----------------------------------------------|---------------------------------|
+| [`modules/cli-read`](modules/cli-read) (also the root module) | Read-only queries whose results you use in your configuration | `plan`, `apply` and `refresh`, every time     | `data "external"`               |
+| [`modules/cli-exec`](modules/cli-exec)                        | Mutating commands                                             | `apply` only, and only when its inputs change | `terraform_data` + `local-exec` |
 
 # Plan versus apply
 
-|  | cli-read | cli-exec |
-| - | -------- | -------- |
-| Runs during `terraform plan` | Yes | **No** |
-| Runs during `terraform apply` | Yes (unless the plan already read it) | Yes, on create, and when replaced |
-| Runs during `terraform refresh` | Yes | No |
-| Reruns | On every plan, apply and refresh | Only when `commands`, `for_each_item_commands`, `assume_role`, `region`, `show_output`, `ignore_error_codes`, `triggers`, or this module's scripts change |
-| Allowed operations | Read-only: `describe-*`, `list-*`, `get-*`, `batch-get-*` and reviewed `check-*` operations, minus a denylist of operations that return secrets | Any |
-| Results available to Terraform | Yes: `result`, `result_raw`, `result_was_decoded` | No. Output is discarded unless `show_output = true`, and then only shown in the apply log |
-| Stored in state | Inputs, and the full result | Inputs (in `triggers_replace`), never results |
-| Credentials needed | Read-only | Whatever the commands need |
+|                                 | cli-read                                                                                                                                        | cli-exec                                                                                                                                                  |
+|---------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Runs during `terraform plan`    | Yes                                                                                                                                             | **No**                                                                                                                                                    |
+| Runs during `terraform apply`   | Yes (unless the plan already read it)                                                                                                           | Yes, on create, and when replaced                                                                                                                         |
+| Runs during `terraform refresh` | Yes                                                                                                                                             | No                                                                                                                                                        |
+| Reruns                          | On every plan, apply and refresh                                                                                                                | Only when `commands`, `for_each_item_commands`, `assume_role`, `region`, `show_output`, `ignore_error_codes`, `triggers`, or this module's scripts change |
+| Allowed operations              | Read-only: `describe-*`, `list-*`, `get-*`, `batch-get-*` and reviewed `check-*` operations, minus a denylist of operations that return secrets | Any                                                                                                                                                       |
+| Results available to Terraform  | Yes: `result`, `result_raw`, `result_was_decoded`                                                                                               | No. Output is discarded unless `show_output = true`, and then only shown in the apply log                                                                 |
+| Stored in state                 | Inputs, and the full result                                                                                                                     | Inputs (in `triggers_replace`), never results                                                                                                             |
+| Credentials needed              | Read-only                                                                                                                                       | Whatever the commands need                                                                                                                                |
 
 ## Use different IAM identities for plan and apply
 
@@ -212,20 +212,20 @@ Anything else is rejected with a message pointing to cli-exec. `--debug` and `--
 `lightsail check-subdomain-availability --reserve` reserves the subdomain. So only these reviewed `check-` operations are
 allowed. A `check-` operation added to the AWS CLI later is rejected until it has been reviewed and added here.
 
-| Operation | Notes |
-| --------- | ----- |
-| `accessanalyzer check-access-not-granted` | |
-| `accessanalyzer check-no-new-access` | |
-| `accessanalyzer check-no-public-access` | |
-| `bedrock-agent-runtime check-ingested-document-acl` | |
-| `elasticbeanstalk check-dns-availability` | |
-| `glue check-schema-version-validity` | |
-| `lightsail check-subdomain-availability` | Not with `--reserve`, which reserves the subdomain. |
-| `qbusiness check-document-access` | The result includes the document's ACL and the user's groups and aliases. |
-| `route53domains check-domain-availability` | |
-| `route53domains check-domain-transferability` | Denylisted by default: its `--auth-code` argument is a secret. |
-| `sns check-if-phone-number-is-opted-out` | The phone number (personal data) is stored in state as an argument. |
-| `wafv2 check-capacity` | |
+| Operation                                           | Notes                                                                     |
+|-----------------------------------------------------|---------------------------------------------------------------------------|
+| `accessanalyzer check-access-not-granted`           |                                                                           |
+| `accessanalyzer check-no-new-access`                |                                                                           |
+| `accessanalyzer check-no-public-access`             |                                                                           |
+| `bedrock-agent-runtime check-ingested-document-acl` |                                                                           |
+| `elasticbeanstalk check-dns-availability`           |                                                                           |
+| `glue check-schema-version-validity`                |                                                                           |
+| `lightsail check-subdomain-availability`            | Not with `--reserve`, which reserves the subdomain.                       |
+| `qbusiness check-document-access`                   | The result includes the document's ACL and the user's groups and aliases. |
+| `route53domains check-domain-availability`          |                                                                           |
+| `route53domains check-domain-transferability`       | Denylisted by default: its `--auth-code` argument is a secret.            |
+| `sns check-if-phone-number-is-opted-out`            | The phone number (personal data) is stored in state as an argument.       |
+| `wafv2 check-capacity`                              |                                                                           |
 
 These rules cannot be overridden: `allow_denylisted_operations` only unblocks operations on the denylist.
 
@@ -340,19 +340,23 @@ Version 8 is a breaking release:
 
 1. Values in `aws_cli_commands` are no longer interpreted by a shell. Remove any quotes you added around values
    containing spaces (`"'value'"` becomes `"value"`); they would now be passed to the AWS CLI literally.
-2. cli-read only accepts read-only operations. Move mutating commands to `modules/cli-exec`. Commands that are not
+2. Argument with values in `aws_cli_commands` used to be able to be expressed as `--option value`. This is no longer the
+   case. Use:
+   1. `"--option", "value"`
+   2. `"--option=value"`
+3. cli-read only accepts read-only operations. Move mutating commands to `modules/cli-exec`. Commands that are not
    `<service> <operation>`, such as `["--version"]`, are rejected.
-3. Operations that return secrets are blocked unless allowed with `allow_denylisted_operations`.
-4. `--profile`, `--debug` and `--endpoint-url` are not allowed in `aws_cli_commands`. Use `profile` and `debug_log_dir`.
-5. `alternative_path` is ignored (no results file is written any more), and `MODULE_TERRAFORM_AWS_CLI_RETAIN_LOGS` has
+4. Operations that return secrets are blocked unless allowed with `allow_denylisted_operations`.
+5. `--profile`, `--debug` and `--endpoint-url` are not allowed in `aws_cli_commands`. Use `profile` and `debug_log_dir`.
+6. `alternative_path` is ignored (no results file is written any more), and `MODULE_TERRAFORM_AWS_CLI_RETAIN_LOGS` has
    no effect. Use `debug_log_dir`.
-6. The scripts now require `bash`.
+7. The scripts now require `bash`.
 
 # Warning
 
 cli-read uses Terraform's `external` data source. As per the warnings
 [here](https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/external), Terraform expects
-a data source to have _no observable side-effects_, and will re-run the program each time the state is refreshed. That
+a data source to have _no observable side effects_, and will re-run the program each time the state is refreshed. That
 is why cli-read only allows read-only operations, and why mutating commands belong in cli-exec.
 
 These modules are _NOT_ a replacement for the AWS Terraform Provider. Prefer a provider resource or data source wherever

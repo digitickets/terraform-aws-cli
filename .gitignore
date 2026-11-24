@@ -12,5 +12,4 @@ vendor/
 aliased-providers.tf.json
 .terraform.lock.hcl
 
-# Fake aws invocation logs written by terraform test
 .fake_aws.log
