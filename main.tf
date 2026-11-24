@@ -1,41 +1,23 @@
-locals {
-  joined_aws_cli_command = join(" ", var.aws_cli_commands)
-  external_program_query = {
-    assume_role_arn      = var.assume_role_arn
-    role_session_name    = length(var.assume_role_arn) > 0 ? var.role_session_name : ""
-    aws_cli_commands     = local.joined_aws_cli_command
-    aws_cli_query        = var.aws_cli_query
-    external_id          = var.external_id
-    profile              = var.profile
-    region               = var.region
-    retries_max_attempts = var.retries.max_attempts
-    retries_mode         = var.retries.mode
-  }
-  standard_results_file    = format("%s/temp/%s/results.json", path.module, md5(join("-", values(local.external_program_query))))
-  alternative_results_file = format("%s/results.json", var.alternative_path)
-  results_file             = length(var.alternative_path) == 0 ? local.standard_results_file : local.alternative_results_file
-}
+# The root module is a backwards-compatible alias of `modules/cli-read`.
+#
+# All inputs are passed through unchanged and validated by the submodule. New consumers can reference the submodules
+# directly:
+#   - `digitickets/cli/aws//modules/cli-read` for read-only queries that run at plan and apply.
+#   - `digitickets/cli/aws//modules/cli-exec` for mutating commands that run at apply only.
+module "cli_read" {
+  source = "./modules/cli-read"
 
-data "external" "awscli_program" {
-  program = [
-    format("%s/scripts/aws_cli_runner.sh", path.module),
-    local.results_file
-  ]
-  query = local.external_program_query
-}
-
-# Due to the way the Terraform External Provider has various limitations on processing the output of an external
-# program, the script that is called creates a separate file and is then referenced via a local_file data block.
-# Amongst the chief benefits is that all the data types returned from AWS are not converted to strings for Terraform to
-# access.
-data "local_file" "awscli_results_file" {
-  depends_on = [data.external.awscli_program]
-  filename   = local.results_file
-
-  lifecycle {
-    postcondition {
-      condition     = var.suppress_error_handling ? true : (try(jsondecode(self.content).error, false) == false)
-      error_message = try(jsondecode(self.content).error, "Unknown error")
-    }
-  }
+  additional_denied_operations = var.additional_denied_operations
+  allow_denylisted_operations  = var.allow_denylisted_operations
+  alternative_path             = var.alternative_path
+  assume_role_arn              = var.assume_role_arn
+  aws_cli_commands             = var.aws_cli_commands
+  aws_cli_query                = var.aws_cli_query
+  debug_log_dir                = var.debug_log_dir
+  external_id                  = var.external_id
+  profile                      = var.profile
+  region                       = var.region
+  retries                      = var.retries
+  role_session_name            = var.role_session_name
+  suppress_error_handling      = var.suppress_error_handling
 }

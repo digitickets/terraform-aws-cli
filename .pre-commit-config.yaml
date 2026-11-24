@@ -27,7 +27,6 @@ repos:
         exclude: |
           (?x)(
             ^.terraform/|
-            ^modules/|
             ^validate/
           )
         stages: [pre-commit]

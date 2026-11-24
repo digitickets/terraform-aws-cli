@@ -4,12 +4,16 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         terraform_version:
+          - 1.17.1
           - 1.16.2
           - 1.15.9
           - 1.14.9
@@ -37,18 +41,12 @@ jobs:
           tfenv install ${{ matrix.terraform_version }}
           tfenv use ${{ matrix.terraform_version }}
 
-      - name: Update the test result for 1 file
+      - name: Check tools
         run: |
-          AWS_CLI_VERSION=$(aws --version) envsubst '\$AWS_CLI_VERSION' < tests/test_version_retrieval_will_error/expected_apply_outputs.json > temp.json
-          mv -f temp.json tests/test_version_retrieval_will_error/expected_apply_outputs.json
+          terraform version
+          jq --version
+          shellcheck --version
 
-      - name: Run tests
-        run: |
-          tests/tests.sh
-
-      - name: Capture logs
-        uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: logs-${{ matrix.terraform_version }}
-          path: test-reports/**/*
+      # shellcheck, terraform fmt/validate, script tests, and terraform test. A fake `aws` is used; AWS is never called.
+      - name: Run checks and tests
+        run: tests/run.sh
