@@ -3,6 +3,7 @@
 # Table of contents
 
 - [CHANGELOG](#changelog)
+  - [UNRELEASED](#unreleased)
   - [8.0.0 - 2026-11-24](#800---2026-11-24)
     - [Security improvements](#security-improvements)
     - [BREAKING CHANGES](#breaking-changes)
@@ -11,6 +12,9 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # CHANGELOG
+
+## UNRELEASED
+- From inf-base: Update Terraform and Pre-commit.
 
 ## 8.0.0 - 2026-11-24
 - Split into two modules, with the root module kept as a backwards-compatible alias of `modules/cli-read`:
